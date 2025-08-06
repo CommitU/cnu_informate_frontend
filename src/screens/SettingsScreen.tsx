@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Switch, Alert } from 'react-native';
+import { Alert, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // 관심 분야 타입 정의
@@ -202,28 +202,36 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>설정</Text>
-        <Text style={styles.headerSubtitle}>앱 설정 및 계정 관리</Text>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <View className="px-5 pt-2 pb-5 bg-blue-600">
+        <Text className="text-2xl font-bold text-white mb-1">
+          설정
+        </Text>
+        <Text className="text-base text-white opacity-90">
+          앱 설정 및 계정 관리
+        </Text>
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView className="flex-1">
         {settingSections.map((section) => (
-          <View key={section.id} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.sectionContent}>
+          <View key={section.id} className="mb-6">
+            <Text className="text-lg font-bold text-gray-900 mx-4 mb-2 mt-4">
+              {section.title}
+            </Text>
+            <View className="bg-white rounded-xl mx-4 overflow-hidden">
               {section.items.map((item) => (
                 <TouchableOpacity
                   key={item.id}
-                  style={styles.settingItem}
+                  className="flex-row items-center px-4 py-4 border-b border-gray-100"
                   onPress={item.onPress}
                   disabled={item.type === 'toggle'}
                 >
-                  <View style={styles.settingItemContent}>
-                    <Text style={styles.settingItemTitle}>{item.title}</Text>
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-gray-900 mb-1">
+                      {item.title}
+                    </Text>
                     {item.subtitle && (
-                      <Text style={styles.settingItemSubtitle}>
+                      <Text className="text-sm text-gray-600">
                         {item.subtitle}
                       </Text>
                     )}
@@ -239,15 +247,15 @@ export default function SettingsScreen() {
                   )}
                   
                   {item.type === 'link' && (
-                    <Text style={styles.linkArrow}>→</Text>
+                    <Text className="text-base text-blue-600 font-bold">→</Text>
                   )}
                   
                   {item.type === 'button' && item.id === 'logout' && (
-                    <Text style={styles.logoutText}>로그아웃</Text>
+                    <Text className="text-base text-blue-600 font-medium">로그아웃</Text>
                   )}
                   
                   {item.type === 'button' && item.id === 'delete' && (
-                    <Text style={styles.deleteText}>탈퇴</Text>
+                    <Text className="text-base text-red-500 font-medium">탈퇴</Text>
                   )}
                 </TouchableOpacity>
               ))}
@@ -257,83 +265,4 @@ export default function SettingsScreen() {
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  header: {
-    padding: 20,
-    backgroundColor: '#1976D2',
-    paddingTop: 10,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.9,
-  },
-  content: {
-    flex: 1,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#212121',
-    marginHorizontal: 16,
-    marginBottom: 8,
-    marginTop: 16,
-  },
-  sectionContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginHorizontal: 16,
-    overflow: 'hidden',
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  settingItemContent: {
-    flex: 1,
-  },
-  settingItemTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#212121',
-    marginBottom: 2,
-  },
-  settingItemSubtitle: {
-    fontSize: 14,
-    color: '#757575',
-  },
-  linkArrow: {
-    fontSize: 16,
-    color: '#1976D2',
-    fontWeight: 'bold',
-  },
-  logoutText: {
-    fontSize: 16,
-    color: '#1976D2',
-    fontWeight: '500',
-  },
-  deleteText: {
-    fontSize: 16,
-    color: '#F44336',
-    fontWeight: '500',
-  },
-}); 
+} 

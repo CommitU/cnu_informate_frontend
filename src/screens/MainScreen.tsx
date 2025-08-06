@@ -2,7 +2,6 @@ import React from "react";
 import {
     RefreshControl,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View,
@@ -96,70 +95,61 @@ export default function MainScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>CNU InfoMate</Text>
-                <Text style={styles.headerSubtitle}>맞춤형 공지사항</Text>
+        <SafeAreaView className="flex-1 bg-gray-50">
+            <View className="px-5 pt-2 pb-5 bg-blue-600">
+                <Text className="text-2xl font-bold text-white mb-1">
+                    CNU InfoMate
+                </Text>
+                <Text className="text-base text-white opacity-90">
+                    맞춤형 공지사항
+                </Text>
             </View>
 
             <ScrollView
-                style={styles.content}
+                className="flex-1"
                 refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                <View style={styles.noticeList}>
+                <View className="p-4">
                     {notices.map((notice) => (
                         <TouchableOpacity
                             key={notice.id}
-                            style={styles.noticeCard}
+                            className="bg-white rounded-xl p-4 mb-3 shadow-sm"
                             onPress={() => handleNoticePress(notice)}
                             activeOpacity={0.7}
                         >
-                            <View style={styles.noticeHeader}>
-                                <View style={styles.categoryContainer}>
+                            <View className="flex-row justify-between items-center mb-2">
+                                <View className="flex-1">
                                     <View
-                                        style={[
-                                            styles.categoryTag,
-                                            {
-                                                backgroundColor:
-                                                    getCategoryColor(
-                                                        notice.category
-                                                    ),
-                                            },
-                                        ]}
+                                        className="px-2 py-1 rounded-full self-start"
+                                        style={{ backgroundColor: getCategoryColor(notice.category) }}
                                     >
-                                        <Text style={styles.categoryText}>
+                                        <Text className="text-white text-xs font-semibold">
                                             {notice.category}
                                         </Text>
                                     </View>
                                 </View>
-                                <View style={styles.importanceContainer}>
-                                    <Text style={styles.importanceText}>
+                                <View className="ml-2">
+                                    <Text className="text-sm text-yellow-500">
                                         {getImportanceStars(notice.importance)}
                                     </Text>
                                 </View>
                             </View>
 
-                            <Text style={styles.noticeTitle} numberOfLines={2}>
+                            <Text className="text-base font-bold text-gray-900 mb-2 leading-6" numberOfLines={2}>
                                 {notice.title}
                             </Text>
 
-                            <Text
-                                style={styles.noticeContent}
-                                numberOfLines={3}
-                            >
+                            <Text className="text-sm text-gray-600 leading-5 mb-3" numberOfLines={3}>
                                 {notice.content}
                             </Text>
 
-                            <View style={styles.noticeFooter}>
-                                <Text style={styles.noticeDate}>
+                            <View className="flex-row justify-between items-center">
+                                <Text className="text-xs text-gray-500">
                                     {notice.created_at}
                                 </Text>
-                                <Text style={styles.readMore}>
+                                <Text className="text-xs text-blue-600 font-semibold">
                                     자세히 보기 →
                                 </Text>
                             </View>
@@ -168,11 +158,11 @@ export default function MainScreen() {
                 </View>
 
                 {notices.length === 0 && (
-                    <View style={styles.emptyState}>
-                        <Text style={styles.emptyStateText}>
+                    <View className="flex-1 justify-center items-center p-10">
+                        <Text className="text-lg font-bold text-gray-600 text-center mb-2">
                             추천할 공지사항이 없습니다.
                         </Text>
-                        <Text style={styles.emptyStateSubtext}>
+                        <Text className="text-sm text-gray-500 text-center leading-5">
                             관심 분야를 설정하거나 나중에 다시 시도해주세요.
                         </Text>
                     </View>
@@ -181,119 +171,3 @@ export default function MainScreen() {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#F5F5F5",
-    },
-    header: {
-        padding: 20,
-        backgroundColor: "#1976D2",
-        paddingTop: 10,
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#FFFFFF",
-        marginBottom: 4,
-    },
-    headerSubtitle: {
-        fontSize: 16,
-        color: "#FFFFFF",
-        opacity: 0.9,
-    },
-    content: {
-        flex: 1,
-    },
-    noticeList: {
-        padding: 16,
-    },
-    noticeCard: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    noticeHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 8,
-    },
-    categoryContainer: {
-        flex: 1,
-    },
-    categoryTag: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
-        alignSelf: "flex-start",
-    },
-    categoryText: {
-        color: "#FFFFFF",
-        fontSize: 12,
-        fontWeight: "600",
-    },
-    importanceContainer: {
-        marginLeft: 8,
-    },
-    importanceText: {
-        fontSize: 14,
-        color: "#FFD700",
-    },
-    noticeTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#212121",
-        marginBottom: 8,
-        lineHeight: 22,
-    },
-    noticeContent: {
-        fontSize: 14,
-        color: "#757575",
-        lineHeight: 20,
-        marginBottom: 12,
-    },
-    noticeFooter: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    noticeDate: {
-        fontSize: 12,
-        color: "#9E9E9E",
-    },
-    readMore: {
-        fontSize: 12,
-        color: "#1976D2",
-        fontWeight: "600",
-    },
-    emptyState: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 40,
-    },
-    emptyStateText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#757575",
-        textAlign: "center",
-        marginBottom: 8,
-    },
-    emptyStateSubtext: {
-        fontSize: 14,
-        color: "#9E9E9E",
-        textAlign: "center",
-        lineHeight: 20,
-    },
-});

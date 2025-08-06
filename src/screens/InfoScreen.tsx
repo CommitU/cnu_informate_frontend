@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // 정보 타입 정의
@@ -125,29 +125,31 @@ export default function InfoScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>정보 확인</Text>
-        <Text style={styles.headerSubtitle}>학사 정보 및 공지사항</Text>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <View className="px-5 pt-2 pb-5 bg-blue-600">
+        <Text className="text-2xl font-bold text-white mb-1">
+          정보 확인
+        </Text>
+        <Text className="text-base text-white opacity-90">
+          학사 정보 및 공지사항
+        </Text>
       </View>
 
       {/* 카테고리 탭 */}
-      <View style={styles.categoryTabs}>
+      <View className="flex-row bg-white px-4 py-2 border-b border-gray-200">
         {categories.map((category) => (
           <TouchableOpacity
             key={category.key}
-            style={[
-              styles.categoryTab,
-              selectedCategory === category.key && styles.categoryTabActive,
-            ]}
+            className={`flex-1 items-center py-3 px-1 rounded-lg mx-1 ${
+              selectedCategory === category.key ? 'bg-blue-50' : ''
+            }`}
             onPress={() => setSelectedCategory(category.key)}
           >
-            <Text style={styles.categoryIcon}>{category.icon}</Text>
+            <Text className="text-xl mb-1">{category.icon}</Text>
             <Text
-              style={[
-                styles.categoryLabel,
-                selectedCategory === category.key && styles.categoryLabelActive,
-              ]}
+              className={`text-xs font-medium ${
+                selectedCategory === category.key ? 'text-blue-600 font-semibold' : 'text-gray-600'
+              }`}
             >
               {category.label}
             </Text>
@@ -156,58 +158,58 @@ export default function InfoScreen() {
       </View>
 
       <ScrollView
-        style={styles.content}
+        className="flex-1"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View style={styles.itemList}>
+        <View className="p-4">
           {getDataByCategory(selectedCategory).map((item) => (
             <TouchableOpacity
               key={item.id}
-              style={styles.itemCard}
+              className="bg-white rounded-xl p-4 mb-3 shadow-sm"
               onPress={() => handleItemPress(item)}
               activeOpacity={0.7}
             >
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle} numberOfLines={2}>
+              <View className="flex-row justify-between items-start mb-2">
+                <Text className="text-base font-bold text-gray-900 flex-1 leading-6" numberOfLines={2}>
                   {item.title}
                 </Text>
                 {item.amount && (
-                  <View style={styles.amountContainer}>
-                    <Text style={styles.amountText}>
+                  <View className="bg-orange-500 px-2 py-1 rounded-full ml-2">
+                    <Text className="text-white text-xs font-semibold">
                       {formatAmount(item.amount)}
                     </Text>
                   </View>
                 )}
               </View>
 
-              <Text style={styles.itemContent} numberOfLines={3}>
+              <Text className="text-sm text-gray-600 leading-5 mb-3" numberOfLines={3}>
                 {item.content}
               </Text>
 
-              <View style={styles.itemFooter}>
-                <View style={styles.dateContainer}>
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1">
                   {item.date ? (
-                    <Text style={styles.dateText}>{formatDate(item.date)}</Text>
+                    <Text className="text-xs text-gray-500">{formatDate(item.date)}</Text>
                   ) : item.startDate && item.endDate ? (
-                    <Text style={styles.dateText}>
+                    <Text className="text-xs text-gray-500">
                       {formatDateRange(item.startDate, item.endDate)}
                     </Text>
                   ) : null}
                 </View>
-                <Text style={styles.readMore}>자세히 보기 →</Text>
+                <Text className="text-xs text-blue-600 font-semibold">자세히 보기 →</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
         {getDataByCategory(selectedCategory).length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>
+          <View className="flex-1 justify-center items-center p-10">
+            <Text className="text-lg font-bold text-gray-600 text-center mb-2">
               {selectedCategory} 정보가 없습니다.
             </Text>
-            <Text style={styles.emptyStateSubtext}>
+            <Text className="text-sm text-gray-500 text-center leading-5">
               나중에 다시 확인해주세요.
             </Text>
           </View>
@@ -215,145 +217,4 @@ export default function InfoScreen() {
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  header: {
-    padding: 20,
-    backgroundColor: '#1976D2',
-    paddingTop: 10,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.9,
-  },
-  categoryTabs: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-  },
-  categoryTab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginHorizontal: 4,
-  },
-  categoryTabActive: {
-    backgroundColor: '#E3F2FD',
-  },
-  categoryIcon: {
-    fontSize: 20,
-    marginBottom: 4,
-  },
-  categoryLabel: {
-    fontSize: 12,
-    color: '#757575',
-    fontWeight: '500',
-  },
-  categoryLabelActive: {
-    color: '#1976D2',
-    fontWeight: '600',
-  },
-  content: {
-    flex: 1,
-  },
-  itemList: {
-    padding: 16,
-  },
-  itemCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#212121',
-    flex: 1,
-    lineHeight: 22,
-  },
-  amountContainer: {
-    backgroundColor: '#FF6B35',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginLeft: 8,
-  },
-  amountText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  itemContent: {
-    fontSize: 14,
-    color: '#757575',
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  itemFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dateContainer: {
-    flex: 1,
-  },
-  dateText: {
-    fontSize: 12,
-    color: '#9E9E9E',
-  },
-  readMore: {
-    fontSize: 12,
-    color: '#1976D2',
-    fontWeight: '600',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyStateText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#757575',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  emptyStateSubtext: {
-    fontSize: 14,
-    color: '#9E9E9E',
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-}); 
+} 

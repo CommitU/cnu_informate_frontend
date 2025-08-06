@@ -69,7 +69,7 @@ export default function App() {
 // 간단한 탭바 아이콘 컴포넌트
 function TabBarIcon({ name, color, size }: { name: string; color: string; size: number }) {
   return (
-    <Text style={{ fontSize: size, color }}>
+    <Text className="text-center" style={{ fontSize: size, color }}>
       {name === 'house' && '🏠'}
       {name === 'doc-text' && '📄'}
       {name === 'settings' && '⚙️'}
