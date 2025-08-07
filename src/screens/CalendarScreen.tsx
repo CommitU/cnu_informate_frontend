@@ -201,80 +201,63 @@ export default function CalendarScreen() {
                       const dayEvents = getEventsForDay(day);
 
                       return (
-                        <View
+                        <TouchableOpacity
                           key={dayIndex}
-                          className="flex-1 h-20 border-r border-b border-gray-100"
+                          className={`flex-1 h-16 items-center justify-start pt-1 ${
+                            isSelected
+                              ? "bg-blue-500 rounded-lg"
+                              : isToday
+                                ? "bg-blue-50 rounded-lg"
+                                : ""
+                          }`}
+                          onPress={() => setSelectedDate(day)}
+                          disabled={!isCurrentMonth}
                         >
-                          <TouchableOpacity
-                            className={`w-full h-full ${
-                              isSelected
-                                ? "bg-blue-500"
-                                : isToday
-                                  ? "bg-blue-50"
-                                  : "bg-white"
-                            }`}
-                            onPress={() => setSelectedDate(day)}
-                            disabled={!isCurrentMonth}
-                          >
-                            <View className="w-full h-full p-1">
-                              {/* 날짜 표시 - 맨 위 */}
-                              <View className="w-full items-center mb-1">
-                                <Text
-                                  className={`text-sm font-semibold ${
-                                    !isCurrentMonth
-                                      ? "text-gray-300"
-                                      : isSelected
-                                        ? "text-white"
-                                        : isToday
-                                          ? "text-blue-600"
-                                          : "text-gray-700"
-                                  }`}
-                                >
-                                  {day.getDate()}
-                                </Text>
-                              </View>
+                          <View className="w-full h-full items-center">
+                            {/* 날짜 표시 - 맨 위 */}
+                            <Text
+                              className={`text-sm font-medium mb-1 ${
+                                !isCurrentMonth
+                                  ? "text-gray-300"
+                                  : isSelected
+                                    ? "text-white"
+                                    : isToday
+                                      ? "text-blue-600"
+                                      : "text-gray-700"
+                              }`}
+                            >
+                              {day.getDate()}
+                            </Text>
 
-                              {/* 일정 표시 */}
-                              <View className="flex-1">
-                                {dayEvents.slice(0, 2).map((event) => (
+                            {/* 일정 표시 - 간단한 점으로 */}
+                            {dayEvents.length > 0 && (
+                              <View className="flex-row justify-center">
+                                {dayEvents.slice(0, 3).map((event, index) => (
                                   <View
                                     key={event.id}
-                                    className="mb-0.5 px-1 py-0.5 rounded-sm"
+                                    className="w-1.5 h-1.5 rounded-full mx-0.5"
                                     style={{
                                       backgroundColor: isSelected
-                                        ? "rgba(255, 255, 255, 0.3)"
-                                        : event.color + "20",
+                                        ? "rgba(255, 255, 255, 0.8)"
+                                        : event.color,
                                     }}
-                                  >
-                                    <Text
-                                      className={`text-xs font-medium text-center ${
-                                        isSelected
-                                          ? "text-white"
-                                          : "text-gray-700"
-                                      }`}
-                                      numberOfLines={1}
-                                    >
-                                      {event.title}
-                                    </Text>
-                                  </View>
+                                  />
                                 ))}
-                                {dayEvents.length > 2 && (
-                                  <View className="px-1 py-0.5">
-                                    <Text
-                                      className={`text-xs text-center ${
-                                        isSelected
-                                          ? "text-white"
-                                          : "text-gray-500"
-                                      }`}
-                                    >
-                                      +{dayEvents.length - 2}개 더
-                                    </Text>
-                                  </View>
+                                {dayEvents.length > 3 && (
+                                  <Text
+                                    className={`text-xs ${
+                                      isSelected
+                                        ? "text-white"
+                                        : "text-gray-500"
+                                    }`}
+                                  >
+                                    +{dayEvents.length - 3}
+                                  </Text>
                                 )}
                               </View>
-                            </View>
-                          </TouchableOpacity>
-                        </View>
+                            )}
+                          </View>
+                        </TouchableOpacity>
                       );
                     })}
                 </View>
