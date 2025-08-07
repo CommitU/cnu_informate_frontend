@@ -1,0 +1,387 @@
+import React, { useState } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+// 일정 타입 정의
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time?: string;
+  category: string;
+  importance: number;
+  color: string;
+}
+
+// 임시 일정 데이터
+const mockEvents: Event[] = [
+  {
+    id: "1",
+    title: "2024학년도 2학기 수강신청",
+    description:
+      "2학기 수강신청 기간입니다. 수강신청 기간과 방법을 확인하세요.",
+    date: "2024-02-15",
+    time: "09:00",
+    category: "학사일정",
+    importance: 5,
+    color: "#4285F4",
+  },
+  {
+    id: "2",
+    title: "2024년 국가장학금 신청",
+    description:
+      "국가장학금 신청이 시작됩니다. 지원 자격과 신청 방법을 확인하세요.",
+    date: "2024-01-15",
+    time: "10:00",
+    category: "장학금",
+    importance: 4,
+    color: "#EA4335",
+  },
+  {
+    id: "3",
+    title: "IT 취업 특강",
+    description: "IT 업계 전문가를 초빙한 취업 특강이 개최됩니다.",
+    date: "2024-01-20",
+    time: "14:00",
+    category: "특강/세미나",
+    importance: 3,
+    color: "#FBBC04",
+  },
+  {
+    id: "4",
+    title: "2024년 동아리 신규 모집",
+    description: "새로운 동아리 모집이 시작됩니다.",
+    date: "2024-01-25",
+    time: "16:00",
+    category: "동아리/모임",
+    importance: 2,
+    color: "#34A853",
+  },
+];
+
+export default function CalendarScreen() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // 현재 월의 일정 가져오기
+  const getEventsForMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    return mockEvents.filter((event) => {
+      const eventDate = new Date(event.date);
+      return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+    });
+  };
+
+  // 선택된 날짜의 일정 가져오기
+  const getEventsForDate = (date: Date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return mockEvents.filter((event) => event.date === dateString);
+  };
+
+  // 특정 날짜의 일정 가져오기
+  const getEventsForDay = (date: Date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return mockEvents.filter((event) => event.date === dateString);
+  };
+
+  // 월 이동
+  const changeMonth = (direction: "prev" | "next") => {
+    const newMonth = new Date(currentMonth);
+    if (direction === "prev") {
+      newMonth.setMonth(newMonth.getMonth() - 1);
+    } else {
+      newMonth.setMonth(newMonth.getMonth() + 1);
+    }
+    setCurrentMonth(newMonth);
+  };
+
+  // 달력 날짜 생성
+  const generateCalendarDays = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+    const days = [];
+    for (let i = 0; i < 42; i++) {
+      const day = new Date(startDate);
+      day.setDate(startDate.getDate() + i);
+      days.push(day);
+    }
+    return days;
+  };
+
+  // 날짜 포맷팅
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("ko-KR", { month: "long", year: "numeric" });
+  };
+
+  // 요일 헤더
+  const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+
+  const calendarDays = generateCalendarDays(currentMonth);
+  const monthEvents = getEventsForMonth(currentMonth);
+  const selectedDateEvents = getEventsForDate(selectedDate);
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingTop: 20 }}>
+        <View className="px-5 mb-6">
+          <Text className="text-3xl font-bold text-gray-900 mb-2">일정</Text>
+          <Text className="text-lg text-gray-600">
+            학사 일정을 달력으로 확인하세요
+          </Text>
+        </View>
+
+        {/* 달력 컨테이너 */}
+        <View className="mx-5 mb-6">
+          <View
+            className="bg-white rounded-3xl p-6"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            {/* 월 네비게이션 */}
+            <View className="flex-row items-center justify-between mb-6">
+              <TouchableOpacity
+                onPress={() => changeMonth("prev")}
+                className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+                activeOpacity={0.7}
+              >
+                <Text className="text-lg">‹</Text>
+              </TouchableOpacity>
+              <Text className="text-xl font-bold text-gray-900">
+                {formatDate(currentMonth)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => changeMonth("next")}
+                className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center"
+                activeOpacity={0.7}
+              >
+                <Text className="text-lg">›</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* 요일 헤더 */}
+            <View className="flex-row mb-2">
+              {weekDays.map((day, index) => (
+                <View key={day} className="flex-1 items-center py-2">
+                  <Text
+                    className={`text-xs font-semibold ${
+                      index === 0 ? "text-red-500" : "text-gray-600"
+                    }`}
+                  >
+                    {day}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {/* 달력 그리드 */}
+            <View>
+              {Array.from({ length: 6 }, (_, weekIndex) => (
+                <View key={weekIndex} className="flex-row">
+                  {calendarDays
+                    .slice(weekIndex * 7, (weekIndex + 1) * 7)
+                    .map((day, dayIndex) => {
+                      const isCurrentMonth =
+                        day.getMonth() === currentMonth.getMonth();
+                      const isSelected =
+                        day.toDateString() === selectedDate.toDateString();
+                      const isToday =
+                        day.toDateString() === new Date().toDateString();
+                      const dayEvents = getEventsForDay(day);
+
+                      return (
+                        <View
+                          key={dayIndex}
+                          className="flex-1 h-20 border-r border-b border-gray-100"
+                        >
+                          <TouchableOpacity
+                            className={`w-full h-full ${
+                              isSelected
+                                ? "bg-blue-500"
+                                : isToday
+                                  ? "bg-blue-50"
+                                  : "bg-white"
+                            }`}
+                            onPress={() => setSelectedDate(day)}
+                            disabled={!isCurrentMonth}
+                          >
+                            <View className="w-full h-full p-1">
+                              {/* 날짜 표시 - 맨 위 */}
+                              <View className="w-full items-center mb-1">
+                                <Text
+                                  className={`text-sm font-semibold ${
+                                    !isCurrentMonth
+                                      ? "text-gray-300"
+                                      : isSelected
+                                        ? "text-white"
+                                        : isToday
+                                          ? "text-blue-600"
+                                          : "text-gray-700"
+                                  }`}
+                                >
+                                  {day.getDate()}
+                                </Text>
+                              </View>
+
+                              {/* 일정 표시 */}
+                              <View className="flex-1">
+                                {dayEvents.slice(0, 2).map((event) => (
+                                  <View
+                                    key={event.id}
+                                    className="mb-0.5 px-1 py-0.5 rounded-sm"
+                                    style={{
+                                      backgroundColor: isSelected
+                                        ? "rgba(255, 255, 255, 0.3)"
+                                        : event.color + "20",
+                                    }}
+                                  >
+                                    <Text
+                                      className={`text-xs font-medium text-center ${
+                                        isSelected
+                                          ? "text-white"
+                                          : "text-gray-700"
+                                      }`}
+                                      numberOfLines={1}
+                                    >
+                                      {event.title}
+                                    </Text>
+                                  </View>
+                                ))}
+                                {dayEvents.length > 2 && (
+                                  <View className="px-1 py-0.5">
+                                    <Text
+                                      className={`text-xs text-center ${
+                                        isSelected
+                                          ? "text-white"
+                                          : "text-gray-500"
+                                      }`}
+                                    >
+                                      +{dayEvents.length - 2}개 더
+                                    </Text>
+                                  </View>
+                                )}
+                              </View>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    })}
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        {/* 선택된 날짜의 일정 */}
+        <View className="mb-6">
+          <Text className="text-lg font-bold text-gray-900 mx-5 mb-3">
+            {selectedDate.toLocaleDateString("ko-KR", {
+              month: "long",
+              day: "numeric",
+              weekday: "long",
+            })}
+          </Text>
+          <View className="mx-5">
+            {selectedDateEvents.length > 0 ? (
+              selectedDateEvents.map((event) => (
+                <TouchableOpacity
+                  key={event.id}
+                  className="bg-white rounded-2xl p-5 mb-3"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 3,
+                  }}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    Alert.alert(event.title, event.description);
+                  }}
+                >
+                  <View className="flex-row justify-between items-start mb-2">
+                    <View className="flex-1">
+                      <View className="flex-row items-center mb-2">
+                        <View
+                          className="w-3 h-3 rounded-full mr-2"
+                          style={{ backgroundColor: event.color }}
+                        />
+                        <Text className="text-sm text-gray-600 font-semibold">
+                          {event.category}
+                        </Text>
+                      </View>
+                      <Text className="text-lg font-bold text-gray-900 mb-1">
+                        {event.title}
+                      </Text>
+                      <Text className="text-sm text-gray-600 leading-5">
+                        {event.description}
+                      </Text>
+                    </View>
+                    {event.time && (
+                      <View className="bg-gray-100 px-3 py-1 rounded-full">
+                        <Text className="text-xs text-gray-600 font-medium">
+                          {event.time}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                      <Text className="text-xs text-yellow-500 mr-1">
+                        {"★".repeat(event.importance)}
+                      </Text>
+                      <Text className="text-xs text-gray-500">
+                        중요도 {event.importance}/5
+                      </Text>
+                    </View>
+                    <Text className="text-xs text-blue-500 font-semibold">
+                      자세히 보기 →
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View className="bg-white rounded-2xl p-8 items-center">
+                <Text className="text-lg font-bold text-gray-600 mb-2">
+                  일정이 없습니다
+                </Text>
+                <Text className="text-sm text-gray-500 text-center">
+                  이 날에는 등록된 일정이 없습니다
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* 일정 추가 버튼 */}
+        <View className="mx-5 mb-6">
+          <TouchableOpacity
+            className="bg-blue-500 rounded-2xl py-4 items-center"
+            activeOpacity={0.8}
+            onPress={() => {
+              Alert.alert(
+                "일정 추가",
+                "일정 추가 기능은 추후 구현 예정입니다."
+              );
+            }}
+          >
+            <Text className="text-white font-semibold text-lg">
+              + 일정 추가
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

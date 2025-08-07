@@ -5,6 +5,7 @@ import React from "react";
 import { Text } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import CalendarScreen from "./src/screens/CalendarScreen";
 import InfoScreen from "./src/screens/InfoScreen";
 import MainScreen from "./src/screens/MainScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
@@ -49,6 +50,16 @@ export default function App() {
             }}
           />
           <Tab.Screen
+            name="Calendar"
+            component={CalendarScreen}
+            options={{
+              title: "일정",
+              tabBarIcon: ({ color, size }) => (
+                <TabBarIcon name="calendar" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tab.Screen
             name="Info"
             component={InfoScreen}
             options={{
@@ -87,6 +98,7 @@ function TabBarIcon({
 }) {
   const icons: { [key: string]: string } = {
     home: "🏠",
+    calendar: "📅",
     info: "📋",
     settings: "⚙️",
   };
