@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Alert,
+  Animated,
   ScrollView,
   Switch,
   Text,
@@ -53,7 +54,30 @@ export default function SettingsScreen() {
     eventNotifications: false,
   });
 
+  // 애니메이션 값들을 저장할 객체
+  const [animations] = useState(() => {
+    const anims: { [key: string]: Animated.Value } = {};
+    interests.forEach((interest) => {
+      anims[interest.id] = new Animated.Value(1);
+    });
+    return anims;
+  });
+
   const handleInterestToggle = (id: string) => {
+    // 스케일 애니메이션
+    Animated.sequence([
+      Animated.timing(animations[id], {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animations[id], {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     setInterests((prev) =>
       prev.map((interest) =>
         interest.id === id
@@ -103,17 +127,6 @@ export default function SettingsScreen() {
   };
 
   const settingSections: SettingSection[] = [
-    {
-      id: "interests",
-      title: "관심 분야",
-      items: interests.map((interest) => ({
-        id: interest.id,
-        title: interest.name,
-        type: "toggle" as const,
-        value: interest.selected,
-        onToggle: () => handleInterestToggle(interest.id),
-      })),
-    },
     {
       id: "notifications",
       title: "알림 설정",
@@ -220,6 +233,78 @@ export default function SettingsScreen() {
           <Text className="text-lg text-gray-600">
             앱 설정 및 계정을 관리하세요
           </Text>
+        </View>
+
+        {/* 관심 분야 태그 선택 섹션 */}
+        <View className="mb-6">
+          <Text className="text-lg font-bold text-gray-900 mx-5 mb-3">
+            관심 분야
+          </Text>
+          <View
+            className="mx-5 bg-white rounded-3xl p-6"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            <View className="flex-row items-center mb-4">
+              <View className="w-1 h-3 bg-blue-500 rounded-full mr-3" />
+              <Text className="text-xs text-gray-600 flex-1">
+                관심 있는 분야를 선택하면 맞춤형 공지사항을 받을 수 있습니다
+              </Text>
+            </View>
+            <View className="flex-row flex-wrap gap-2">
+              {interests.map((interest) => (
+                <Animated.View
+                  key={interest.id}
+                  style={{
+                    transform: [{ scale: animations[interest.id] }],
+                  }}
+                >
+                  <TouchableOpacity
+                    className={`px-3 py-2 rounded-full border-2 ${
+                      interest.selected
+                        ? "bg-blue-500 border-blue-500"
+                        : "bg-white border-gray-200"
+                    }`}
+                    onPress={() => handleInterestToggle(interest.id)}
+                    activeOpacity={0.8}
+                    style={{
+                      shadowColor: interest.selected ? "#007AFF" : "#000",
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: interest.selected ? 0.3 : 0.1,
+                      shadowRadius: 4,
+                      elevation: interest.selected ? 4 : 2,
+                    }}
+                  >
+                    <Text
+                      className={`text-sm font-semibold ${
+                        interest.selected ? "text-white" : "text-gray-700"
+                      }`}
+                    >
+                      {interest.name}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              ))}
+            </View>
+            <View className="mt-5 pt-4 border-t border-gray-100">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-xs text-gray-500">
+                  선택된 분야: {interests.filter((i) => i.selected).length}개
+                </Text>
+                <View className="flex-row items-center">
+                  <View className="w-2 h-2 bg-blue-500 rounded-full mr-1" />
+                  <Text className="text-xs text-blue-500 font-medium">
+                    선택됨
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
 
         {settingSections.map((section) => (
