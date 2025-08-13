@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuthStore } from "../stores/authStore";
 
 // 관심 분야 타입 정의
 interface Interest {
@@ -35,6 +36,7 @@ interface SettingItem {
 }
 
 export default function SettingsScreen() {
+  const { logout } = useAuthStore();
   const [interests, setInterests] = useState<Interest[]>([
     { id: "1", name: "특강/세미나", selected: true },
     { id: "2", name: "마케팅/홍보", selected: false },
@@ -101,8 +103,7 @@ export default function SettingsScreen() {
         text: "로그아웃",
         style: "destructive",
         onPress: () => {
-          // TODO: 로그아웃 로직 구현
-          console.log("로그아웃");
+          logout();
         },
       },
     ]);
