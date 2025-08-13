@@ -6,11 +6,11 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Input } from "../components";
 import { useAuthStore } from "../stores/authStore";
 
 interface RegisterScreenProps {
@@ -109,134 +109,63 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
 
             {/* 회원가입 폼 */}
             <View className="space-y-4">
-              <View>
-                <Text className="text-sm font-semibold text-gray-700 mb-2">
-                  이름
-                </Text>
-                <View className="relative">
-                  <TextInput
-                    className="w-full h-14 px-4 bg-gray-50 rounded-xl border border-gray-200 text-base"
-                    placeholder="이름을 입력하세요"
-                    value={name}
-                    onChangeText={setName}
-                    autoCapitalize="words"
-                  />
-                  <View className="absolute right-4 top-4">
-                    <Ionicons name="person-outline" size={20} color="#9CA3AF" />
-                  </View>
-                </View>
-              </View>
+              <Input
+                label="이름"
+                placeholder="이름을 입력하세요"
+                value={name}
+                onChangeText={setName}
+                type="text"
+                icon="person-outline"
+                autoCapitalize="words"
+              />
 
-              <View>
-                <Text className="text-sm font-semibold text-gray-700 mb-2">
-                  이메일
-                </Text>
-                <View className="relative">
-                  <TextInput
-                    className="w-full h-14 px-4 bg-gray-50 rounded-xl border border-gray-200 text-base"
-                    placeholder="이메일을 입력하세요"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                  <View className="absolute right-4 top-4">
-                    <Ionicons name="mail-outline" size={20} color="#9CA3AF" />
-                  </View>
-                </View>
-              </View>
+              <Input
+                label="이메일"
+                placeholder="이메일을 입력하세요"
+                value={email}
+                onChangeText={setEmail}
+                type="email"
+                icon="mail-outline"
+              />
 
-              <View>
-                <Text className="text-sm font-semibold text-gray-700 mb-2">
-                  학번
-                </Text>
-                <View className="relative">
-                  <TextInput
-                    className="w-full h-14 px-4 bg-gray-50 rounded-xl border border-gray-200 text-base"
-                    placeholder="학번을 입력하세요"
-                    value={studentId}
-                    onChangeText={setStudentId}
-                    keyboardType="numeric"
-                    maxLength={8}
-                  />
-                  <View className="absolute right-4 top-4">
-                    <Ionicons name="card-outline" size={20} color="#9CA3AF" />
-                  </View>
-                </View>
-              </View>
+              <Input
+                label="학번"
+                placeholder="학번을 입력하세요"
+                value={studentId}
+                onChangeText={setStudentId}
+                type="numeric"
+                icon="card-outline"
+                maxLength={8}
+              />
 
-              <View>
-                <Text className="text-sm font-semibold text-gray-700 mb-2">
-                  비밀번호
-                </Text>
-                <View className="relative">
-                  <TextInput
-                    className="w-full h-14 px-4 bg-gray-50 rounded-xl border border-gray-200 text-base"
-                    placeholder="비밀번호를 입력하세요 (6자 이상)"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                  />
-                  <TouchableOpacity
-                    className="absolute right-4 top-4"
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Ionicons
-                      name={showPassword ? "eye-off-outline" : "eye-outline"}
-                      size={20}
-                      color="#9CA3AF"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <Input
+                label="비밀번호"
+                placeholder="비밀번호를 입력하세요 (6자 이상)"
+                value={password}
+                onChangeText={setPassword}
+                type="password"
+                secureTextEntry={!showPassword}
+                onToggleSecureText={() => setShowPassword(!showPassword)}
+              />
 
-              <View>
-                <Text className="text-sm font-semibold text-gray-700 mb-2">
-                  비밀번호 확인
-                </Text>
-                <View className="relative">
-                  <TextInput
-                    className="w-full h-14 px-4 bg-gray-50 rounded-xl border border-gray-200 text-base"
-                    placeholder="비밀번호를 다시 입력하세요"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry={!showConfirmPassword}
-                    autoCapitalize="none"
-                  />
-                  <TouchableOpacity
-                    className="absolute right-4 top-4"
-                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    <Ionicons
-                      name={
-                        showConfirmPassword ? "eye-off-outline" : "eye-outline"
-                      }
-                      size={20}
-                      color="#9CA3AF"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
+              <Input
+                label="비밀번호 확인"
+                placeholder="비밀번호를 다시 입력하세요"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                type="password"
+                secureTextEntry={!showConfirmPassword}
+                onToggleSecureText={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+              />
 
-              <TouchableOpacity
-                className={`w-full h-14 rounded-xl items-center justify-center mt-6 ${
-                  isLoading ? "bg-gray-300" : "bg-blue-500"
-                }`}
+              <Button
+                title={isLoading ? "가입 중..." : "회원가입"}
                 onPress={handleRegister}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Text className="text-white font-semibold text-base">
-                    가입 중...
-                  </Text>
-                ) : (
-                  <Text className="text-white font-semibold text-base">
-                    회원가입
-                  </Text>
-                )}
-              </TouchableOpacity>
+                loading={isLoading}
+                className="mt-6"
+              />
             </View>
 
             {/* 로그인 링크 */}

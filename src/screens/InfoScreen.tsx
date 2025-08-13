@@ -1,24 +1,10 @@
 import React, { useState } from "react";
-import {
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// 정보 타입 정의
-interface InfoItem {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  date?: string;
-  startDate?: string;
-  endDate?: string;
-  amount?: number;
-}
+import { CategoryTab, InfoItemCard } from "../components";
+import { ScreenHeader } from "../components/common";
+import { Category, InfoItem } from "../types";
 
 // 임시 데이터
 const mockAcademicSchedule: InfoItem[] = [
@@ -77,8 +63,6 @@ const mockNotices: InfoItem[] = [
   },
 ];
 
-type Category = "학사일정" | "장학금" | "공지사항";
-
 export default function InfoScreen() {
   const [selectedCategory, setSelectedCategory] =
     useState<Category>("학사일정");
@@ -116,21 +100,6 @@ export default function InfoScreen() {
     console.log("항목 클릭:", item.title);
   };
 
-  const formatAmount = (amount?: number) => {
-    if (!amount) return "";
-    return `${amount.toLocaleString()}원`;
-  };
-
-  const formatDate = (date?: string) => {
-    if (!date) return "";
-    return new Date(date).toLocaleDateString("ko-KR");
-  };
-
-  const formatDateRange = (startDate?: string, endDate?: string) => {
-    if (!startDate || !endDate) return "";
-    return `${formatDate(startDate)} ~ ${formatDate(endDate)}`;
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView
@@ -140,112 +109,22 @@ export default function InfoScreen() {
         }
         contentContainerStyle={{ paddingTop: 20 }}
       >
-        <View className="px-5 mb-6">
-          <Text className="text-3xl font-bold text-gray-900 mb-2">
-            정보 확인
-          </Text>
-          <Text className="text-lg text-gray-600">
-            학사 정보 및 공지사항을 확인하세요
-          </Text>
-        </View>
+        <ScreenHeader
+          title="정보 확인"
+          subtitle="학사 정보 및 공지사항을 확인하세요"
+        />
 
-        {/* 카테고리 탭 */}
-        <View className="px-5 mb-6">
-          <View className="flex-row bg-white rounded-2xl p-1 shadow-sm">
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category.key}
-                className={`flex-1 items-center py-3 px-2 rounded-xl ${
-                  selectedCategory === category.key ? "bg-blue-500" : ""
-                }`}
-                onPress={() => setSelectedCategory(category.key)}
-              >
-                <Text className="text-lg mb-1">{category.icon}</Text>
-                <Text
-                  className={`text-xs font-semibold ${
-                    selectedCategory === category.key
-                      ? "text-white"
-                      : "text-gray-600"
-                  }`}
-                >
-                  {category.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <CategoryTab
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+        />
 
         <View className="px-5">
           {getDataByCategory(selectedCategory).map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              className="bg-white rounded-2xl p-5 mb-4 shadow-sm"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 8,
-                elevation: 3,
-              }}
-              onPress={() => handleItemPress(item)}
-              activeOpacity={0.8}
-            >
-              <View className="flex-row justify-between items-start mb-3">
-                <Text
-                  className="text-lg font-bold text-gray-900 flex-1 leading-6"
-                  numberOfLines={2}
-                >
-                  {item.title}
-                </Text>
-                {item.amount && (
-                  <View className="bg-orange-500 px-3 py-1.5 rounded-full ml-3">
-                    <Text className="text-white text-xs font-semibold">
-                      {formatAmount(item.amount)}
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              <Text
-                className="text-sm text-gray-600 leading-5 mb-4"
-                numberOfLines={3}
-              >
-                {item.content}
-              </Text>
-
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1">
-                  {item.date ? (
-                    <Text className="text-xs text-gray-500 font-medium">
-                      {formatDate(item.date)}
-                    </Text>
-                  ) : item.startDate && item.endDate ? (
-                    <Text className="text-xs text-gray-500 font-medium">
-                      {formatDateRange(item.startDate, item.endDate)}
-                    </Text>
-                  ) : null}
-                </View>
-                <View className="flex-row items-center">
-                  <Text className="text-xs text-blue-500 font-semibold mr-1">
-                    자세히 보기
-                  </Text>
-                  <Text className="text-xs text-blue-500">→</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+            <InfoItemCard key={item.id} item={item} onPress={handleItemPress} />
           ))}
         </View>
-
-        {getDataByCategory(selectedCategory).length === 0 && (
-          <View className="flex-1 justify-center items-center p-10">
-            <Text className="text-xl font-bold text-gray-600 text-center mb-3">
-              {selectedCategory} 정보가 없습니다
-            </Text>
-            <Text className="text-base text-gray-500 text-center leading-6">
-              나중에 다시 확인해주세요
-            </Text>
-          </View>
-        )}
       </ScrollView>
     </SafeAreaView>
   );
