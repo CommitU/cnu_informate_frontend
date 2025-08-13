@@ -1,8 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { Text } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import CalendarScreen from "./src/screens/CalendarScreen";
@@ -86,7 +86,7 @@ export default function App() {
   );
 }
 
-// 토스 스타일 탭바 아이콘 컴포넌트
+// 깔끔한 Vector Icons 기반 탭바 아이콘 컴포넌트
 function TabBarIcon({
   name,
   color,
@@ -96,16 +96,14 @@ function TabBarIcon({
   color: string;
   size: number;
 }) {
-  const icons: { [key: string]: string } = {
-    home: "🏠",
-    calendar: "📅",
-    info: "📋",
-    settings: "⚙️",
+  const icons: { [key: string]: keyof typeof Ionicons.glyphMap } = {
+    home: "home-outline",
+    calendar: "calendar-outline",
+    info: "information-circle-outline",
+    settings: "settings-outline",
   };
 
-  return (
-    <Text className="text-center" style={{ fontSize: size, color }}>
-      {icons[name] || "📱"}
-    </Text>
-  );
+  const iconName = icons[name] || "ellipse-outline";
+
+  return <Ionicons name={iconName} size={size} color={color} />;
 }
