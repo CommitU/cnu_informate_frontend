@@ -35,13 +35,15 @@ export default function InfoItemCard({
             >
               {item.title}
             </Text>
-            <Text className="text-xs text-gray-500" numberOfLines={1}>
-              {item.date
-                ? formatDate(item.date)
-                : item.startDate && item.endDate
-                  ? formatDateRange(item.startDate, item.endDate)
-                  : ""}
-            </Text>
+            {(item.date || (item.startDate && item.endDate)) && (
+              <Text className="text-xs text-gray-500" numberOfLines={1}>
+                {item.date
+                  ? formatDate(item.date)
+                  : item.startDate && item.endDate
+                    ? formatDateRange(item.startDate, item.endDate)
+                    : ""}
+              </Text>
+            )}
           </View>
           {item.amount && (
             <Text className="text-sm font-semibold text-green-600">
@@ -60,27 +62,28 @@ export default function InfoItemCard({
       activeOpacity={0.8}
     >
       <Text className="text-lg font-bold text-gray-900 mb-2">{item.title}</Text>
-      <Text className="text-sm text-gray-600 mb-3">{item.content}</Text>
 
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center space-x-4">
-          {item.amount && (
-            <Text className="text-sm font-semibold text-green-600">
-              {formatAmount(item.amount)}
-            </Text>
-          )}
-          {item.date && (
-            <Text className="text-sm text-gray-500">
-              {formatDate(item.date)}
-            </Text>
-          )}
-          {item.startDate && item.endDate && (
-            <Text className="text-sm text-gray-500">
-              {formatDateRange(item.startDate, item.endDate)}
-            </Text>
-          )}
+      {(item.amount || item.date || (item.startDate && item.endDate)) && (
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center space-x-4">
+            {item.amount && (
+              <Text className="text-sm font-semibold text-green-600">
+                {formatAmount(item.amount)}
+              </Text>
+            )}
+            {item.date && (
+              <Text className="text-sm text-gray-500">
+                {formatDate(item.date)}
+              </Text>
+            )}
+            {item.startDate && item.endDate && (
+              <Text className="text-sm text-gray-500">
+                {formatDateRange(item.startDate, item.endDate)}
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
+      )}
     </TouchableOpacity>
   );
 }

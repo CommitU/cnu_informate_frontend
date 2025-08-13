@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 interface CategoryTabProps {
-  categories: { key: string; label: string; icon: string }[];
+  categories: { key: string; label: string; icon: string; count?: number }[];
   selectedCategory: string;
   onCategoryChange: (category: any) => void;
   className?: string;
@@ -42,6 +42,7 @@ export default function CategoryTab({
                 }`}
               >
                 {category.label}
+                {category.count !== undefined && ` (${category.count})`}
               </Text>
             </TouchableOpacity>
           ))}
@@ -63,13 +64,18 @@ export default function CategoryTab({
           >
             <Text className="text-lg mb-1">{category.icon}</Text>
             <Text
-              className={`text-xs font-semibold ${
+              className={`text-xs font-semibold text-center ${
                 selectedCategory === category.key
                   ? "text-white"
                   : "text-gray-600"
               }`}
             >
               {category.label}
+              {category.count !== undefined && (
+                <Text className="text-xs opacity-75">
+                  {'\n'}({category.count})
+                </Text>
+              )}
             </Text>
           </TouchableOpacity>
         ))}

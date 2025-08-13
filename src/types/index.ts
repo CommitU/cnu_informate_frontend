@@ -19,6 +19,7 @@ export interface InfoItem {
   startDate?: string;
   endDate?: string;
   amount?: number;
+  url?: string;
 }
 
 // 사용자 타입
@@ -55,7 +56,7 @@ export interface SettingSection {
 }
 
 // 카테고리 타입
-export type Category = "학사일정" | "장학금" | "공지사항";
+export type Category = "전체" | "특강" | "기획/마케팅" | "취업/인턴십" | "봉사 활동" | "IT/SW" | "스터디" | "디자인" | "창업" | "영상/콘텐츠" | "서포터즈/기자단";
 
 // 네비게이션 타입
 export interface NavigationProps {
