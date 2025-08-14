@@ -3,8 +3,12 @@ import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { InfoItem } from "../types";
-import { formatAmount, formatDate, formatDateRange } from "../utils/helpers";
+import { InfoItem } from "../../shared/types";
+import {
+  formatAmount,
+  formatDate,
+  formatDateRange,
+} from "../../shared/utils/helpers";
 
 interface InfoItemDetailScreenProps {
   navigation: any;

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CategoryTab, InfoItemCard } from "../components";
-import { ScreenHeader } from "../components/common";
-import { Category, InfoItem, NavigationProps } from "../types";
+import { ScreenHeader } from "../../shared/components";
+import { Category, InfoItem, NavigationProps } from "../../shared/types";
 import {
   getAvailableCategories,
   getNoticesByCategory,
-} from "../utils/csvReader";
+} from "../../shared/utils/csvReader";
+import { CategoryTab, InfoItemCard } from "./components";
 
 export default function InfoScreen({ navigation }: NavigationProps) {
   const [selectedCategory, setSelectedCategory] = useState<Category>("전체");

@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Input } from "../components";
-import { useAuthStore } from "../stores/authStore";
+import { Button, Input } from "../../shared/components";
+import { useAuthStore } from "../../stores/authStore";
 
 interface RegisterScreenProps {
   navigation: any;

@@ -3,12 +3,12 @@ import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Notice } from "../types";
+import { Notice } from "../../shared/types";
 import {
   formatDate,
   getCategoryColor,
   getImportanceStars,
-} from "../utils/helpers";
+} from "../../shared/utils/helpers";
 
 interface NoticeDetailScreenProps {
   navigation: any;

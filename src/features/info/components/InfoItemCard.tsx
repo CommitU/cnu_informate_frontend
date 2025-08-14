@@ -1,7 +1,11 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { InfoItem } from "../../types";
-import { formatAmount, formatDate, formatDateRange } from "../../utils/helpers";
+import { InfoItem } from "../../../shared/types";
+import {
+  formatAmount,
+  formatDate,
+  formatDateRange,
+} from "../../../shared/utils/helpers";
 
 interface InfoItemCardProps {
   item: InfoItem;

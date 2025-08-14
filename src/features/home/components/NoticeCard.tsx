@@ -1,12 +1,12 @@
 import React from "react";
 import { Text, View } from "react-native";
-import { Notice } from "../../types";
+import { Card } from "../../../shared/components";
+import { Notice } from "../../../shared/types";
 import {
   formatDate,
   getCategoryColor,
   getImportanceStars,
-} from "../../utils/helpers";
-import { Card } from "../common";
+} from "../../../shared/utils/helpers";
 
 interface NoticeCardProps {
   notice: Notice;

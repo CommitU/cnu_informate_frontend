@@ -2,9 +2,9 @@ import React from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { NoticeCard } from "../components";
-import { ScreenHeader } from "../components/common";
-import { NavigationProps, Notice } from "../types";
+import { ScreenHeader } from "../../shared/components";
+import { NavigationProps, Notice } from "../../shared/types";
+import { NoticeCard } from "./components";
 
 // 임시 데이터 (나중에 API로 교체)
 const mockNotices: Notice[] = [

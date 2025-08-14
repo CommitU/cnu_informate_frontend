@@ -6,14 +6,11 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import CalendarScreen from "./src/screens/CalendarScreen";
-import InfoItemDetailScreen from "./src/screens/InfoItemDetailScreen";
-import InfoScreen from "./src/screens/InfoScreen";
-import LoginScreen from "./src/screens/LoginScreen";
-import MainScreen from "./src/screens/MainScreen";
-import NoticeDetailScreen from "./src/screens/NoticeDetailScreen";
-import RegisterScreen from "./src/screens/RegisterScreen";
-import SettingsScreen from "./src/screens/SettingsScreen";
+import { LoginScreen, RegisterScreen } from "./src/features/auth";
+import { CalendarScreen } from "./src/features/calendar";
+import { MainScreen, NoticeDetailScreen } from "./src/features/home";
+import { InfoItemDetailScreen, InfoScreen } from "./src/features/info";
+import { SettingsScreen } from "./src/features/settings";
 import { useAuthStore } from "./src/stores/authStore";
 
 import "./global.css";
