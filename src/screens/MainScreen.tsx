@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { NoticeCard } from "../components";
 import { ScreenHeader } from "../components/common";
-import { Notice } from "../types";
+import { NavigationProps, Notice } from "../types";
 
 // 임시 데이터 (나중에 API로 교체)
 const mockNotices: Notice[] = [
@@ -46,7 +46,7 @@ const mockNotices: Notice[] = [
   },
 ];
 
-export default function MainScreen() {
+export default function MainScreen({ navigation }: NavigationProps) {
   const [refreshing, setRefreshing] = React.useState(false);
   const [notices, setNotices] = React.useState<Notice[]>(mockNotices);
 
@@ -59,8 +59,7 @@ export default function MainScreen() {
   }, []);
 
   const handleNoticePress = (notice: Notice) => {
-    // TODO: 공지 상세 페이지로 이동
-    console.log("공지 클릭:", notice.title);
+    navigation.navigate("NoticeDetail", { notice });
   };
 
   return (

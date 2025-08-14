@@ -1,69 +1,60 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { CategoryTab, InfoItemCard } from "../components";
 import { ScreenHeader } from "../components/common";
-import { Category, InfoItem } from "../types";
-import { getNoticesByCategory, getAvailableCategories } from "../utils/csvReader";
+import { Category, InfoItem, NavigationProps } from "../types";
+import {
+  getAvailableCategories,
+  getNoticesByCategory,
+} from "../utils/csvReader";
 
-
-export default function InfoScreen() {
-  const [selectedCategory, setSelectedCategory] =
-    useState<Category>("전체");
+export default function InfoScreen({ navigation }: NavigationProps) {
+  const [selectedCategory, setSelectedCategory] = useState<Category>("전체");
   const [refreshing, setRefreshing] = useState(false);
   const [notices, setNotices] = useState<InfoItem[]>([]);
-  const [categories, setCategories] = useState<{ key: Category; label: string; icon: string; count: number }[]>([]);
+  const [categories, setCategories] = useState<
+    { key: Category; label: string; count: number }[]
+  >([]);
   const [, setLoading] = useState(true);
-
-  // 카테고리별 아이콘 매핑
-  const getCategoryIcon = (categoryName: string): string => {
-    const categoryIcons: { [key: string]: string } = {
-      '특강': '🎓',
-      '기획/마케팅': '📊',
-      '취업/인턴십': '💼',
-      '봉사 활동': '🤝',
-      'IT/SW': '💻',
-      '스터디': '📚',
-      '디자인': '🎨',
-      '창업': '🚀',
-      '영상/콘텐츠': '📹',
-      '서포터즈/기자단': '📰',
-      '전체': '📋'
-    };
-    return categoryIcons[categoryName] || '📄';
-  };
 
   // 데이터 로드
   const loadData = async () => {
     try {
       setLoading(true);
-      
+
       // 카테고리 목록 로드
       const availableCategories = await getAvailableCategories();
       const allCategoryNames = ["전체", ...availableCategories];
-      
+
       // 각 카테고리별로 데이터 개수 계산
       const categoryData = await Promise.all(
         allCategoryNames.map(async (categoryName) => {
-          const categoryNotices = await getNoticesByCategory(categoryName, 0, 100);
+          const categoryNotices = await getNoticesByCategory(
+            categoryName,
+            0,
+            100
+          );
           return {
             key: categoryName as Category,
             label: categoryName,
-            icon: getCategoryIcon(categoryName),
-            count: categoryNotices.length
+            count: categoryNotices.length,
           };
         })
       );
-      
+
       setCategories(categoryData);
-      
+
       // 현재 선택된 카테고리의 공지사항 로드
-      const currentNotices = await getNoticesByCategory(selectedCategory, 0, 100);
+      const currentNotices = await getNoticesByCategory(
+        selectedCategory,
+        0,
+        100
+      );
       setNotices(currentNotices);
-      
     } catch (error) {
-      console.error('데이터 로드 실패:', error);
+      console.error("데이터 로드 실패:", error);
     } finally {
       setLoading(false);
     }
@@ -76,7 +67,7 @@ export default function InfoScreen() {
       const categoryNotices = await getNoticesByCategory(category, 0, 100);
       setNotices(categoryNotices);
     } catch (error) {
-      console.error('카테고리 데이터 로드 실패:', error);
+      console.error("카테고리 데이터 로드 실패:", error);
     }
   };
 
@@ -100,8 +91,7 @@ export default function InfoScreen() {
   }, []); // loadData는 컴포넌트 내부에서 정의되므로 의존성에서 제외
 
   const handleItemPress = (item: InfoItem) => {
-    // TODO: 상세 페이지로 이동
-    console.log("항목 클릭:", item.title);
+    navigation.navigate("InfoItemDetail", { item });
   };
 
   return (

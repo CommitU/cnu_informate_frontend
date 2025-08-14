@@ -1,15 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
+import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import CalendarScreen from "./src/screens/CalendarScreen";
+import InfoItemDetailScreen from "./src/screens/InfoItemDetailScreen";
 import InfoScreen from "./src/screens/InfoScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import MainScreen from "./src/screens/MainScreen";
+import NoticeDetailScreen from "./src/screens/NoticeDetailScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import { useAuthStore } from "./src/stores/authStore";
@@ -18,6 +20,26 @@ import "./global.css";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// 메인 스택 네비게이터
+function MainStackNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainScreen" component={MainScreen} />
+      <Stack.Screen name="NoticeDetail" component={NoticeDetailScreen} />
+    </Stack.Navigator>
+  );
+}
+
+// 정보 스택 네비게이터
+function InfoStackNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="InfoScreen" component={InfoScreen} />
+      <Stack.Screen name="InfoItemDetail" component={InfoItemDetailScreen} />
+    </Stack.Navigator>
+  );
+}
 
 // 메인 탭 네비게이터
 function MainTabNavigator() {
@@ -45,7 +67,7 @@ function MainTabNavigator() {
     >
       <Tab.Screen
         name="Main"
-        component={MainScreen}
+        component={MainStackNavigator}
         options={{
           title: "홈",
           tabBarIcon: ({ color, size }) => (
@@ -65,7 +87,7 @@ function MainTabNavigator() {
       />
       <Tab.Screen
         name="Info"
-        component={InfoScreen}
+        component={InfoStackNavigator}
         options={{
           title: "정보",
           tabBarIcon: ({ color, size }) => (
