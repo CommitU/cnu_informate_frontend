@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
+import { Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LoginScreen, RegisterScreen } from "./src/features/auth";
@@ -17,6 +18,20 @@ import "./global.css";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// 로딩 화면 컴포넌트
+function LoadingScreen() {
+  const { isInitialized } = useAuthStore();
+
+  return (
+    <View className="flex-1 justify-center items-center bg-white">
+      <Text className="text-lg text-gray-600 mb-2">
+        {isInitialized ? "로딩 중..." : "초기화 중..."}
+      </Text>
+      <Text className="text-sm text-gray-400">잠시만 기다려주세요</Text>
+    </View>
+  );
+}
 
 // 메인 스택 네비게이터
 function MainStackNavigator() {
@@ -117,14 +132,14 @@ function AuthStackNavigator() {
 }
 
 export default function App() {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, isInitialized } = useAuthStore();
 
-  // 로딩 중일 때 스플래시 화면 표시
-  if (isLoading) {
+  // 초기화가 완료되지 않았거나 로딩 중일 때 로딩 화면 표시
+  if (!isInitialized || isLoading) {
     return (
       <SafeAreaProvider>
         <StatusBar style="dark" />
-        {/* TODO: 스플래시 화면 컴포넌트 추가 */}
+        <LoadingScreen />
       </SafeAreaProvider>
     );
   }
