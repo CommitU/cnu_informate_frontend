@@ -22,7 +22,7 @@ export default function CategoryTab({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20 }}
+          // contentContainerStyle={{ paddingLeft: 0 }}
         >
           {categories.map((category) => (
             <TouchableOpacity

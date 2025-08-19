@@ -1,8 +1,14 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ScreenHeader } from "../../shared/components";
 import { ALL_CATEGORIES, Category } from "../../shared/constants/categories";
 import { InfoItem, NavigationProps } from "../../shared/types";
 import { getNoticesByCategory } from "../../shared/utils/csvReader";
@@ -14,9 +20,11 @@ export default function InfoScreen({ navigation }: NavigationProps) {
   );
   const [refreshing, setRefreshing] = useState(false);
   const [notices, setNotices] = useState<InfoItem[]>([]);
+  const [filteredNotices, setFilteredNotices] = useState<InfoItem[]>([]);
   const [categories, setCategories] = useState<
     { key: Category; label: string; count: number }[]
   >([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [, setLoading] = useState(true);
 
   // 데이터 로드
@@ -52,6 +60,7 @@ export default function InfoScreen({ navigation }: NavigationProps) {
         100
       );
       setNotices(currentNotices);
+      setFilteredNotices(currentNotices);
     } catch (error) {
       console.error("데이터 로드 실패:", error);
     } finally {
@@ -65,8 +74,25 @@ export default function InfoScreen({ navigation }: NavigationProps) {
     try {
       const categoryNotices = await getNoticesByCategory(category, 0, 100);
       setNotices(categoryNotices);
+      setFilteredNotices(categoryNotices);
     } catch (error) {
       console.error("카테고리 데이터 로드 실패:", error);
+    }
+  };
+
+  // 검색 기능
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredNotices(notices);
+    } else {
+      const filtered = notices.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query.toLowerCase()) ||
+          item.content.toLowerCase().includes(query.toLowerCase()) ||
+          item.category.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredNotices(filtered);
     }
   };
 
@@ -99,17 +125,26 @@ export default function InfoScreen({ navigation }: NavigationProps) {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      <ScrollView
-        className="flex-1"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{ paddingTop: 20 }}
-      >
-        <ScreenHeader
-          title="정보 확인"
-          subtitle="학사 정보 및 공지사항을 확인하세요"
-        />
+      {/* 고정 헤더 영역 */}
+      <View className="pt-5">
+        {/* 검색창 */}
+        <View className="px-4 py-4">
+          <View className="flex-row items-center bg-gray-100 rounded-xl px-4 py-3">
+            <Ionicons name="search" size={20} color="#6B7280" />
+            <TextInput
+              className="flex-1 ml-3 text-base text-gray-900"
+              placeholder="제목, 내용, 카테고리로 검색"
+              placeholderTextColor="#9CA3AF"
+              value={searchQuery}
+              onChangeText={handleSearch}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => handleSearch("")}>
+                <Ionicons name="close-circle" size={20} color="#6B7280" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
 
         <CategoryTab
           categories={categories}
@@ -117,9 +152,17 @@ export default function InfoScreen({ navigation }: NavigationProps) {
           onCategoryChange={handleCategoryChange}
           variant="pills"
         />
+      </View>
 
+      {/* 스크롤 가능한 내용 영역 */}
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View className="px-2">
-          {notices.map((item) => (
+          {filteredNotices.map((item) => (
             <InfoItemCard
               key={item.id}
               item={item}
