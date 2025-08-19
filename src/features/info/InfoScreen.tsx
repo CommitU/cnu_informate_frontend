@@ -95,7 +95,10 @@ export default function InfoScreen({ navigation }: NavigationProps) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView
+      className="flex-1 bg-gray-50"
+      edges={["top", "left", "right"]}
+    >
       <ScrollView
         className="flex-1"
         refreshControl={

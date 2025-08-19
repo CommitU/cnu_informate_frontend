@@ -63,13 +63,16 @@ export default function MainScreen({ navigation }: NavigationProps) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView
+      className="flex-1 bg-gray-50"
+      edges={["top", "left", "right"]}
+    >
       <ScrollView
         className="flex-1"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={{ paddingTop: 20 }}
+        contentContainerStyle={{ paddingTop: 10 }}
       >
         <ScreenHeader title="홈" subtitle="추천 공지사항을 확인하세요" />
 

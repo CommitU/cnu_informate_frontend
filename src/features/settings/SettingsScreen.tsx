@@ -227,7 +227,10 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView
+      className="flex-1 bg-gray-50"
+      edges={["top", "left", "right"]}
+    >
       <ScrollView className="flex-1" contentContainerStyle={{ paddingTop: 20 }}>
         <View className="px-5 mb-6">
           <Text className="text-3xl font-bold text-gray-900 mb-2">설정</Text>
