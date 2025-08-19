@@ -132,14 +132,18 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
 
       {/* 하단 고정 링크 영역 */}
       {item.url && (
-        <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-5 py-4">
-          <TouchableOpacity
-            className="flex-row items-center space-x-2 py-3"
-            activeOpacity={0.7}
-          >
-            <Ionicons name="link" size={16} color="#3B82F6" />
-            <Text className="text-blue-500 underline pl-2">{item.url}</Text>
-          </TouchableOpacity>
+        <View className="absolute bottom-4 left-4 right-4">
+          <View className="bg-white rounded-3xl border border-gray-300 px-4 py-3">
+            <TouchableOpacity
+              className="flex-row items-center"
+              activeOpacity={0.7}
+            >
+              <Ionicons name="link" size={14} color="#3B82F6" />
+              <Text className="text-blue-500 underline pl-2 text-sm">
+                {item.url}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </SafeAreaView>
