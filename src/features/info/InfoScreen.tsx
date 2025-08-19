@@ -98,10 +98,7 @@ export default function InfoScreen({ navigation }: NavigationProps) {
   };
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-gray-50"
-      edges={["top", "left", "right"]}
-    >
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
       <ScrollView
         className="flex-1"
         refreshControl={
@@ -121,9 +118,14 @@ export default function InfoScreen({ navigation }: NavigationProps) {
           variant="pills"
         />
 
-        <View className="px-5">
+        <View className="px-2">
           {notices.map((item) => (
-            <InfoItemCard key={item.id} item={item} onPress={handleItemPress} />
+            <InfoItemCard
+              key={item.id}
+              item={item}
+              onPress={handleItemPress}
+              variant="compact"
+            />
           ))}
         </View>
       </ScrollView>

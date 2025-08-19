@@ -27,7 +27,7 @@ export default function InfoItemCard({
   if (variant === "compact") {
     return (
       <TouchableOpacity
-        className="bg-white rounded-xl p-4 mb-3 shadow-sm"
+        className="bg-white p-4 border-b border-gray-200"
         onPress={handlePress}
         activeOpacity={0.8}
       >
@@ -61,7 +61,7 @@ export default function InfoItemCard({
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl p-5 mb-4 shadow-sm"
+      className="bg-white p-5 border-b border-gray-200"
       onPress={handlePress}
       activeOpacity={0.8}
     >
