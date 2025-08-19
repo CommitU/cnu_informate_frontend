@@ -10,7 +10,6 @@ interface Event {
   date: string;
   time?: string;
   category: string;
-  importance: number;
   color: string;
 }
 
@@ -23,8 +22,8 @@ const mockEvents: Event[] = [
       "2학기 수강신청 기간입니다. 수강신청 기간과 방법을 확인하세요.",
     date: "2024-02-15",
     time: "09:00",
-    category: "학사일정",
-    importance: 5,
+    category: "학사안내",
+
     color: "#4285F4",
   },
   {
@@ -34,8 +33,8 @@ const mockEvents: Event[] = [
       "국가장학금 신청이 시작됩니다. 지원 자격과 신청 방법을 확인하세요.",
     date: "2024-01-15",
     time: "10:00",
-    category: "장학금",
-    importance: 4,
+    category: "학사안내",
+
     color: "#EA4335",
   },
   {
@@ -44,8 +43,8 @@ const mockEvents: Event[] = [
     description: "IT 업계 전문가를 초빙한 취업 특강이 개최됩니다.",
     date: "2024-01-20",
     time: "14:00",
-    category: "특강/세미나",
-    importance: 3,
+    category: "특강",
+
     color: "#FBBC04",
   },
   {
@@ -54,8 +53,8 @@ const mockEvents: Event[] = [
     description: "새로운 동아리 모집이 시작됩니다.",
     date: "2024-01-25",
     time: "16:00",
-    category: "동아리/모임",
-    importance: 2,
+    category: "스터디",
+
     color: "#34A853",
   },
 ];
@@ -323,14 +322,6 @@ export default function CalendarScreen() {
                     )}
                   </View>
                   <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                      <Text className="text-xs text-yellow-500 mr-1">
-                        {"★".repeat(event.importance)}
-                      </Text>
-                      <Text className="text-xs text-gray-500">
-                        중요도 {event.importance}/5
-                      </Text>
-                    </View>
                     <Text className="text-xs text-blue-500 font-semibold">
                       자세히 보기 →
                     </Text>

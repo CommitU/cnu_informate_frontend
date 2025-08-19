@@ -13,8 +13,7 @@ const mockNotices: Notice[] = [
     title: "2024학년도 2학기 수강신청 안내",
     content:
       "2024학년도 2학기 수강신청이 시작됩니다. 수강신청 기간과 방법을 확인하세요.",
-    category: "학사/수업",
-    importance: 5,
+    category: "학사안내",
     created_at: "2024-01-15",
   },
   {
@@ -22,8 +21,7 @@ const mockNotices: Notice[] = [
     title: "2024년 국가장학금 신청 안내",
     content:
       "2024년 국가장학금 신청이 시작됩니다. 지원 자격과 신청 방법을 확인하세요.",
-    category: "장학금",
-    importance: 4,
+    category: "학사안내",
     created_at: "2024-01-14",
   },
   {
@@ -32,7 +30,6 @@ const mockNotices: Notice[] = [
     content:
       "IT 업계 전문가를 초빙한 취업 특강이 개최됩니다. 많은 참여 바랍니다.",
     category: "취업/인턴십",
-    importance: 3,
     created_at: "2024-01-13",
   },
   {
@@ -40,8 +37,7 @@ const mockNotices: Notice[] = [
     title: "2024년 동아리 신규 모집",
     content:
       "2024년 새로운 동아리 모집이 시작됩니다. 관심 있는 학생들의 많은 참여 바랍니다.",
-    category: "동아리/모임",
-    importance: 2,
+    category: "스터디",
     created_at: "2024-01-12",
   },
 ];
@@ -59,7 +55,11 @@ export default function MainScreen({ navigation }: NavigationProps) {
   }, []);
 
   const handleNoticePress = (notice: Notice) => {
-    navigation.navigate("NoticeDetail", { notice });
+    const detailItem = {
+      ...notice,
+      type: "notice" as const,
+    };
+    navigation.navigate("Detail", { item: detailItem });
   };
 
   return (

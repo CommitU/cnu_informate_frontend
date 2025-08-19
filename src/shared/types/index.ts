@@ -4,7 +4,6 @@ export interface Notice {
   title: string;
   content: string;
   category: string;
-  importance: number;
   created_at: string;
   url?: string;
 }
@@ -19,6 +18,24 @@ export interface InfoItem {
   startDate?: string;
   endDate?: string;
   amount?: number;
+  url?: string;
+}
+
+// 통합 상세 아이템 타입
+export interface DetailItem {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  type: "notice" | "info";
+  // 공지사항 관련 필드
+  created_at?: string;
+  // 정보 아이템 관련 필드
+  date?: string;
+  startDate?: string;
+  endDate?: string;
+  amount?: number;
+  // 공통 필드
   url?: string;
 }
 
@@ -55,19 +72,8 @@ export interface SettingSection {
   items: SettingItem[];
 }
 
-// 카테고리 타입
-export type Category =
-  | "전체"
-  | "특강"
-  | "기획/마케팅"
-  | "취업/인턴십"
-  | "봉사 활동"
-  | "IT/SW"
-  | "스터디"
-  | "디자인"
-  | "창업"
-  | "영상/콘텐츠"
-  | "서포터즈/기자단";
+// 카테고리 타입 (constants/categories.ts에서 import)
+export type { Category } from "../constants/categories";
 
 // 네비게이션 타입
 export interface NavigationProps {
@@ -81,16 +87,15 @@ export type RootStackParamList = {
   Calendar: undefined;
   Info: undefined;
   Settings: undefined;
-  NoticeDetail: { notice: Notice };
-  InfoItemDetail: { item: InfoItem };
+  Detail: { item: DetailItem };
 };
 
 export type MainStackParamList = {
   MainScreen: undefined;
-  NoticeDetail: { notice: Notice };
+  Detail: { item: DetailItem };
 };
 
 export type InfoStackParamList = {
   InfoScreen: undefined;
-  InfoItemDetail: { item: InfoItem };
+  Detail: { item: DetailItem };
 };

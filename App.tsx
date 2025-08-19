@@ -9,9 +9,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LoginScreen, RegisterScreen } from "./src/features/auth";
 import { CalendarScreen } from "./src/features/calendar";
-import { MainScreen, NoticeDetailScreen } from "./src/features/home";
-import { InfoItemDetailScreen, InfoScreen } from "./src/features/info";
+import { MainScreen } from "./src/features/home";
+import { InfoScreen } from "./src/features/info";
 import { SettingsScreen } from "./src/features/settings";
+import { DetailScreen } from "./src/features/shared";
 import { useAuthStore } from "./src/stores/authStore";
 
 import "./global.css";
@@ -38,7 +39,7 @@ function MainStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainScreen" component={MainScreen} />
-      <Stack.Screen name="NoticeDetail" component={NoticeDetailScreen} />
+      <Stack.Screen name="Detail" component={DetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -48,7 +49,7 @@ function InfoStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="InfoScreen" component={InfoScreen} />
-      <Stack.Screen name="InfoItemDetail" component={InfoItemDetailScreen} />
+      <Stack.Screen name="Detail" component={DetailScreen} />
     </Stack.Navigator>
   );
 }

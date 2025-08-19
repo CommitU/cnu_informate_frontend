@@ -1,12 +1,9 @@
 import React from "react";
 import { Text, View } from "react-native";
 import { Card } from "../../../shared/components";
+import { getCategoryColor } from "../../../shared/constants/categories";
 import { Notice } from "../../../shared/types";
-import {
-  formatDate,
-  getCategoryColor,
-  getImportanceStars,
-} from "../../../shared/utils/helpers";
+import { formatDate } from "../../../shared/utils/helpers";
 
 interface NoticeCardProps {
   notice: Notice;
@@ -90,11 +87,6 @@ export default function NoticeCard({
               {notice.category}
             </Text>
           </View>
-
-          {/* 중요도 별점 */}
-          <Text className="text-xs text-yellow-500">
-            {getImportanceStars(notice.importance)}
-          </Text>
         </View>
 
         {/* 날짜 */}

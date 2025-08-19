@@ -3,15 +3,15 @@ import { RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ScreenHeader } from "../../shared/components";
-import { Category, InfoItem, NavigationProps } from "../../shared/types";
-import {
-  getAvailableCategories,
-  getNoticesByCategory,
-} from "../../shared/utils/csvReader";
+import { ALL_CATEGORIES, Category } from "../../shared/constants/categories";
+import { InfoItem, NavigationProps } from "../../shared/types";
+import { getNoticesByCategory } from "../../shared/utils/csvReader";
 import { CategoryTab, InfoItemCard } from "./components";
 
 export default function InfoScreen({ navigation }: NavigationProps) {
-  const [selectedCategory, setSelectedCategory] = useState<Category>("전체");
+  const [selectedCategory, setSelectedCategory] = useState<Category | "전체">(
+    "전체"
+  );
   const [refreshing, setRefreshing] = useState(false);
   const [notices, setNotices] = useState<InfoItem[]>([]);
   const [categories, setCategories] = useState<
@@ -25,8 +25,7 @@ export default function InfoScreen({ navigation }: NavigationProps) {
       setLoading(true);
 
       // 카테고리 목록 로드
-      const availableCategories = await getAvailableCategories();
-      const allCategoryNames = ["전체", ...availableCategories];
+      const allCategoryNames = ["전체", ...ALL_CATEGORIES];
 
       // 각 카테고리별로 데이터 개수 계산
       const categoryData = await Promise.all(
@@ -61,7 +60,7 @@ export default function InfoScreen({ navigation }: NavigationProps) {
   };
 
   // 카테고리 변경 시 해당 카테고리의 공지사항만 다시 로드
-  const handleCategoryChange = async (category: Category) => {
+  const handleCategoryChange = async (category: Category | "전체") => {
     setSelectedCategory(category);
     try {
       const categoryNotices = await getNoticesByCategory(category, 0, 100);
@@ -91,7 +90,11 @@ export default function InfoScreen({ navigation }: NavigationProps) {
   }, []); // loadData는 컴포넌트 내부에서 정의되므로 의존성에서 제외
 
   const handleItemPress = (item: InfoItem) => {
-    navigation.navigate("InfoItemDetail", { item });
+    const detailItem = {
+      ...item,
+      type: "info" as const,
+    };
+    navigation.navigate("Detail", { item: detailItem });
   };
 
   return (
