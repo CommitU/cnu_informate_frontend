@@ -65,8 +65,10 @@ function MainTabNavigator() {
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
           borderTopWidth: 0,
-          elevation: 0,
-          shadowOpacity: 0,
+          elevation: 8,
+          shadowOpacity: 0.07,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: -2 },
           height: 88,
           paddingBottom: 20,
           paddingTop: 8,
