@@ -1,66 +1,147 @@
-import React from "react";
-import { RefreshControl, ScrollView, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ScreenHeader } from "../../shared/components";
+import { noticeApiService } from "../../shared/services/api";
 import { NavigationProps, Notice } from "../../shared/types";
+import { useInterestStore } from "../../stores/interestStore";
 import { NoticeCard } from "./components";
 
-// 임시 데이터 (나중에 API로 교체)
-const mockNotices: Notice[] = [
-  {
-    id: "1",
-    title: "2024학년도 2학기 수강신청 안내",
-    content:
-      "2024학년도 2학기 수강신청이 시작됩니다. 수강신청 기간과 방법을 확인하세요.",
-    category: "학사안내",
-    created_at: "2024-01-15",
-  },
-  {
-    id: "2",
-    title: "2024년 국가장학금 신청 안내",
-    content:
-      "2024년 국가장학금 신청이 시작됩니다. 지원 자격과 신청 방법을 확인하세요.",
-    category: "학사안내",
-    created_at: "2024-01-14",
-  },
-  {
-    id: "3",
-    title: "IT 취업 특강 안내",
-    content:
-      "IT 업계 전문가를 초빙한 취업 특강이 개최됩니다. 많은 참여 바랍니다.",
-    category: "취업/인턴십",
-    created_at: "2024-01-13",
-  },
-  {
-    id: "4",
-    title: "2024년 동아리 신규 모집",
-    content:
-      "2024년 새로운 동아리 모집이 시작됩니다. 관심 있는 학생들의 많은 참여 바랍니다.",
-    category: "스터디",
-    created_at: "2024-01-12",
-  },
-];
+// 로딩 상태 타입
+type LoadingState = "idle" | "loading" | "success" | "error";
 
 export default function MainScreen({ navigation }: NavigationProps) {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [notices, setNotices] = React.useState<Notice[]>(mockNotices);
+  const { interests, getSelectedInterestNames } = useInterestStore();
+  const [refreshing, setRefreshing] = useState(false);
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [loadingState, setLoadingState] = useState<LoadingState>("idle");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const onRefresh = React.useCallback(() => {
+  // 공지사항 데이터 로드
+  const loadNotices = useCallback(async () => {
+    try {
+      setLoadingState("loading");
+      setErrorMessage("");
+
+      // 선택된 관심분야 가져오기
+      const selectedInterests = getSelectedInterestNames();
+
+      if (selectedInterests.length === 0) {
+        // 관심분야가 선택되지 않은 경우 최근 공지사항 5개 로드
+        const recentNotices = await noticeApiService.getRecentNotices();
+        setNotices(recentNotices.slice(0, 5));
+      } else {
+        // 관심분야 기반 추천 공지사항 5개 로드
+        const recommendedNotices = await noticeApiService.getRecommendedNotices(
+          selectedInterests,
+          5
+        );
+        setNotices(recommendedNotices);
+      }
+
+      setLoadingState("success");
+    } catch (error: any) {
+      console.error("공지사항 로드 실패:", error);
+      setErrorMessage(error.message || "공지사항을 불러오는데 실패했습니다.");
+      setLoadingState("error");
+
+      // 사용자에게 에러 알림
+      Alert.alert(
+        "오류",
+        error.message || "공지사항을 불러오는데 실패했습니다.",
+        [{ text: "확인" }]
+      );
+    }
+  }, [getSelectedInterestNames]);
+
+  // 컴포넌트 마운트 시 데이터 로드
+  useEffect(() => {
+    loadNotices();
+  }, [loadNotices]);
+
+  // 관심분야 변경 시 자동 새로고침
+  useEffect(() => {
+    loadNotices();
+  }, [interests, loadNotices]);
+
+  // 새로고침 처리
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    // TODO: API 호출로 실제 데이터 가져오기
-    setTimeout(() => {
+    try {
+      await loadNotices();
+    } finally {
       setRefreshing(false);
-    }, 1000);
-  }, []);
+    }
+  }, [loadNotices]);
 
-  const handleNoticePress = (notice: Notice) => {
-    const detailItem = {
-      ...notice,
-      type: "notice" as const,
-    };
-    navigation.navigate("Detail", { item: detailItem });
-  };
+  // 공지사항 클릭 처리
+  const handleNoticePress = useCallback(
+    (notice: Notice) => {
+      const detailItem = {
+        id: notice.id,
+        title: notice.title,
+        content: notice.content,
+        type: "notice" as const,
+        url: notice.url,
+        postedAt: notice.postedAt,
+        scrapedAt: notice.scrapedAt,
+        deadlineAt: notice.deadlineAt,
+      };
+      navigation.navigate("Detail", { item: detailItem });
+    },
+    [navigation]
+  );
+
+  // 에러 상태 UI
+  const renderErrorState = () => (
+    <View className="mx-5 bg-red-50 border border-red-200 rounded-2xl p-6">
+      <Text className="text-red-600 text-center font-medium mb-2">
+        데이터를 불러올 수 없습니다
+      </Text>
+      <Text className="text-red-500 text-center text-sm mb-4">
+        {errorMessage}
+      </Text>
+      <TouchableOpacity
+        className="bg-red-500 rounded-lg py-3 px-6"
+        onPress={loadNotices}
+      >
+        <Text className="text-white text-center font-semibold">다시 시도</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  // 로딩 상태 UI
+  const renderLoadingState = () => (
+    <View className="mx-5 bg-white rounded-2xl p-8 shadow-sm">
+      <View className="items-center">
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text className="text-gray-600 mt-4 text-center">
+          맞춤형 공지사항을 불러오는 중...
+        </Text>
+      </View>
+    </View>
+  );
+
+  // 빈 상태 UI
+  const renderEmptyState = () => (
+    <View className="mx-5 bg-gray-50 border border-gray-200 rounded-2xl p-8">
+      <Text className="text-gray-500 text-center font-medium mb-2">
+        추천 공지사항이 없습니다
+      </Text>
+      <Text className="text-gray-400 text-center text-sm">
+        설정에서 관심분야를 선택하면 맞춤형 공지사항을 받을 수 있습니다
+      </Text>
+    </View>
+  );
 
   return (
     <SafeAreaView
@@ -74,16 +155,29 @@ export default function MainScreen({ navigation }: NavigationProps) {
         }
         contentContainerStyle={{ paddingTop: 10 }}
       >
-        <ScreenHeader title="홈" subtitle="추천 공지사항을 확인하세요" />
+        <ScreenHeader title="홈" subtitle="맞춤형 공지사항을 확인하세요" />
 
         <View className="px-5">
-          {notices.map((notice) => (
-            <NoticeCard
-              key={notice.id}
-              notice={notice}
-              onPress={handleNoticePress}
-            />
-          ))}
+          {/* 로딩 상태 */}
+          {loadingState === "loading" && renderLoadingState()}
+
+          {/* 에러 상태 */}
+          {loadingState === "error" && renderErrorState()}
+
+          {/* 성공 상태 - 공지사항 목록 */}
+          {loadingState === "success" && (
+            <>
+              {notices.length > 0
+                ? notices.map((notice) => (
+                    <NoticeCard
+                      key={notice.id}
+                      notice={notice}
+                      onPress={handleNoticePress}
+                    />
+                  ))
+                : renderEmptyState()}
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
