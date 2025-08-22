@@ -1,10 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState } from "react";
 import {
   Alert,
+  Dimensions,
   Linking,
+  Modal,
   ScrollView,
+  StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -29,6 +34,9 @@ interface DetailScreenProps {
 
 export default function DetailScreen({ navigation, route }: DetailScreenProps) {
   const { item } = route.params;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [eventTitle, setEventTitle] = useState("");
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -88,6 +96,36 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
         { text: "확인", style: "default" },
       ]);
     }
+  };
+
+  const handleAddEvent = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCreateEvent = () => {
+    const finalTitle = eventTitle.trim() || item.title;
+    console.log("일정 등록:", {
+      title: finalTitle,
+      date: selectedDate.toISOString(),
+      originalItem: item.title,
+      userInput: eventTitle,
+    });
+
+    Alert.alert(
+      "일정 등록 완료",
+      `제목: ${finalTitle}\n날짜: ${selectedDate.toLocaleDateString("ko-KR")}`,
+      [{ text: "확인", style: "default" }]
+    );
+
+    setIsModalVisible(false);
+    setEventTitle("");
+    setSelectedDate(new Date());
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setEventTitle("");
+    setSelectedDate(new Date());
   };
 
   return (
@@ -175,6 +213,151 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
           </View>
         )}
       </ScrollView>
+
+      {/* 우측 하단 + 버튼 */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={handleAddEvent}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="add" size={24} color="white" />
+      </TouchableOpacity>
+
+      {/* 일정 등록 모달 */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleModalClose}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={handleModalClose}>
+                <Text style={styles.cancelButton}>취소</Text>
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>일정 등록</Text>
+              <TouchableOpacity onPress={handleCreateEvent}>
+                <Text style={styles.confirmButton}>완료</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputSection}>
+              <Text style={styles.inputLabel}>제목</Text>
+              <TextInput
+                style={styles.textInput}
+                value={eventTitle}
+                onChangeText={setEventTitle}
+                placeholder={item.title}
+                placeholderTextColor="#999"
+              />
+            </View>
+
+            <View style={styles.dateSection}>
+              <Text style={styles.inputLabel}>날짜</Text>
+              <View style={styles.datePickerContainer}>
+                <DateTimePicker
+                  value={selectedDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={(event: any, date?: Date) => {
+                    if (date) setSelectedDate(date);
+                  }}
+                  style={styles.datePicker}
+                  locale="ko-KR"
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  floatingButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#3B82F6",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+    maxHeight: Dimensions.get("window").height * 0.7,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  cancelButton: {
+    fontSize: 16,
+    color: "#999",
+  },
+  confirmButton: {
+    fontSize: 16,
+    color: "#3B82F6",
+    fontWeight: "600",
+  },
+  inputSection: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
+    marginBottom: 10,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  dateSection: {
+    marginBottom: 20,
+  },
+  datePickerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  datePicker: {
+    height: 200,
+    width: '100%',
+  },
+});
