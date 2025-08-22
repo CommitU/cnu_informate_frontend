@@ -65,6 +65,35 @@ export const CATEGORY_ICONS: Record<Category, string> = {
   [CATEGORIES.ETC]: "📌",
 };
 
+// API 카테고리 ID와 프론트엔드 카테고리 매핑
+export const CATEGORY_ID_MAPPING: Record<Category, number> = {
+  [CATEGORIES.SPECIAL_LECTURE]: 1,
+  [CATEGORIES.PLANNING_MARKETING]: 2,
+  [CATEGORIES.EMPLOYMENT_INTERNSHIP]: 3,
+  [CATEGORIES.VOLUNTEER]: 4,
+  [CATEGORIES.IT_SW]: 5,
+  [CATEGORIES.STUDY]: 6,
+  [CATEGORIES.DESIGN]: 7,
+  [CATEGORIES.STARTUP]: 8,
+  [CATEGORIES.VIDEO_CONTENT]: 9,
+  [CATEGORIES.SUPPORTERS_REPORTERS]: 10,
+  [CATEGORIES.ACADEMIC_GUIDE]: 11,
+  [CATEGORIES.ETC]: 12,
+};
+
+// 카테고리 ID로 카테고리 이름 가져오기
+export const getCategoryNameById = (id: number): string => {
+  const category = Object.entries(CATEGORY_ID_MAPPING).find(
+    ([_, categoryId]) => categoryId === id
+  );
+  return category ? category[0] : CATEGORIES.ETC;
+};
+
+// 카테고리 이름으로 카테고리 ID 가져오기
+export const getCategoryIdByName = (name: Category): number => {
+  return CATEGORY_ID_MAPPING[name] || 12; // 기본값: 기타
+};
+
 // 카테고리 색상 가져오기 함수
 export const getCategoryColor = (category: string): string => {
   return (

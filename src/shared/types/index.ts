@@ -1,5 +1,19 @@
-// 공지사항 타입
+// 공지사항 타입 (API 스펙 기반)
 export interface Notice {
+  id: number;
+  sourceId: number;
+  externalId?: string;
+  url: string;
+  title: string;
+  content: string;
+  postedAt?: string;
+  scrapedAt: string;
+  deadlineAt?: string;
+  hash?: string;
+}
+
+// 기존 타입과의 호환성을 위한 레거시 타입
+export interface LegacyNotice {
   id: string;
   title: string;
   content: string;
@@ -23,20 +37,22 @@ export interface InfoItem {
 
 // 통합 상세 아이템 타입
 export interface DetailItem {
-  id: string;
+  id: string | number;
   title: string;
   content: string;
-  category: string;
+  category?: string;
   type: "notice" | "info";
   // 공지사항 관련 필드
   created_at?: string;
+  postedAt?: string;
+  scrapedAt?: string;
+  deadlineAt?: string;
+  url?: string;
   // 정보 아이템 관련 필드
   date?: string;
   startDate?: string;
   endDate?: string;
   amount?: number;
-  // 공통 필드
-  url?: string;
 }
 
 // 사용자 타입

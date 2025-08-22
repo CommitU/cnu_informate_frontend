@@ -3,20 +3,13 @@ import {
   Alert,
   Animated,
   ScrollView,
-  Switch,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "../../stores/authStore";
-
-// 관심 분야 타입 정의
-interface Interest {
-  id: string;
-  name: string;
-  selected: boolean;
-}
+import { useInterestStore } from "../../stores/interestStore";
 
 // 설정 섹션 타입 정의
 interface SettingSection {
@@ -29,32 +22,13 @@ interface SettingItem {
   id: string;
   title: string;
   subtitle?: string;
-  type: "toggle" | "button" | "link";
-  value?: boolean;
+  type: "button" | "link";
   onPress?: () => void;
-  onToggle?: (value: boolean) => void;
 }
 
 export default function SettingsScreen() {
   const { logout } = useAuthStore();
-  const [interests, setInterests] = useState<Interest[]>([
-    { id: "1", name: "특강/세미나", selected: true },
-    { id: "2", name: "마케팅/홍보", selected: false },
-    { id: "3", name: "취업/인턴십", selected: true },
-    { id: "4", name: "IT/개발", selected: true },
-    { id: "5", name: "학사/수업", selected: true },
-    { id: "6", name: "장학금", selected: true },
-    { id: "7", name: "동아리/모임", selected: false },
-    { id: "8", name: "기타", selected: false },
-  ]);
-
-  const [notificationSettings, setNotificationSettings] = useState({
-    allNotifications: true,
-    academicNotifications: true,
-    scholarshipNotifications: true,
-    jobNotifications: true,
-    eventNotifications: false,
-  });
+  const { interests, toggleInterest } = useInterestStore();
 
   // 애니메이션 값들을 저장할 객체
   const [animations] = useState(() => {
@@ -80,20 +54,8 @@ export default function SettingsScreen() {
       }),
     ]).start();
 
-    setInterests((prev) =>
-      prev.map((interest) =>
-        interest.id === id
-          ? { ...interest, selected: !interest.selected }
-          : interest
-      )
-    );
-  };
-
-  const handleNotificationToggle = (key: keyof typeof notificationSettings) => {
-    setNotificationSettings((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
+    // 전역 스토어의 toggleInterest 사용
+    toggleInterest(id);
   };
 
   const handleLogout = () => {
@@ -128,52 +90,6 @@ export default function SettingsScreen() {
   };
 
   const settingSections: SettingSection[] = [
-    {
-      id: "notifications",
-      title: "알림 설정",
-      items: [
-        {
-          id: "all",
-          title: "전체 알림",
-          subtitle: "모든 알림을 받습니다",
-          type: "toggle" as const,
-          value: notificationSettings.allNotifications,
-          onToggle: () => handleNotificationToggle("allNotifications"),
-        },
-        {
-          id: "academic",
-          title: "학사 알림",
-          subtitle: "학사 관련 공지사항 알림",
-          type: "toggle" as const,
-          value: notificationSettings.academicNotifications,
-          onToggle: () => handleNotificationToggle("academicNotifications"),
-        },
-        {
-          id: "scholarship",
-          title: "장학금 알림",
-          subtitle: "장학금 관련 공지사항 알림",
-          type: "toggle" as const,
-          value: notificationSettings.scholarshipNotifications,
-          onToggle: () => handleNotificationToggle("scholarshipNotifications"),
-        },
-        {
-          id: "job",
-          title: "취업 알림",
-          subtitle: "취업/인턴십 관련 공지사항 알림",
-          type: "toggle" as const,
-          value: notificationSettings.jobNotifications,
-          onToggle: () => handleNotificationToggle("jobNotifications"),
-        },
-        {
-          id: "event",
-          title: "행사 알림",
-          subtitle: "특강/세미나 등 행사 알림",
-          type: "toggle" as const,
-          value: notificationSettings.eventNotifications,
-          onToggle: () => handleNotificationToggle("eventNotifications"),
-        },
-      ],
-    },
     {
       id: "account",
       title: "계정 설정",
@@ -326,7 +242,6 @@ export default function SettingsScreen() {
                       : ""
                   }`}
                   onPress={item.onPress}
-                  disabled={item.type === "toggle"}
                 >
                   <View className="flex-1">
                     <Text className="text-base font-semibold text-gray-900 mb-1">
@@ -338,15 +253,6 @@ export default function SettingsScreen() {
                       </Text>
                     )}
                   </View>
-
-                  {item.type === "toggle" && (
-                    <Switch
-                      value={item.value}
-                      onValueChange={item.onToggle}
-                      trackColor={{ false: "#E5E5EA", true: "#007AFF" }}
-                      thumbColor={item.value ? "#FFFFFF" : "#FFFFFF"}
-                    />
-                  )}
 
                   {item.type === "link" && (
                     <Text className="text-base text-blue-500 font-bold">→</Text>
