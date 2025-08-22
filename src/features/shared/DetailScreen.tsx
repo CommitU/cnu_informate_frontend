@@ -228,25 +228,19 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
             )}
           </View>
         )}
-        {item.url && (
-          <View className="absolute bottom-4 left-4 right-4">
-            <View className="flex-row justify-end">
-              <TouchableOpacity
-                className="flex-row items-center"
-                activeOpacity={0.7}
-                onPress={handleUrlPress}
-              >
-                <Ionicons name="link" size={16} color="#3B82F6" />
-                <Text className="text-blue-500 underline pl-2 pr-4 text-sm font-medium">
-                  글 링크 열기
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
       </ScrollView>
 
-      {/* 우측 하단 + 버튼 */}
+      {/* 우측 하단 버튼들 */}
+      {item.type === "notice" && item.url && (
+        <TouchableOpacity
+          style={[styles.floatingButton, styles.linkButton]}
+          onPress={handleUrlPress}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="link" size={24} color="white" />
+        </TouchableOpacity>
+      )}
+
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={handleAddEvent}
@@ -326,6 +320,10 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  linkButton: {
+    bottom: 100,
+    backgroundColor: "#10B981",
   },
   modalOverlay: {
     flex: 1,
