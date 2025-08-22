@@ -1,20 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ScreenHeader } from "../../shared/components";
 import { noticeApiService } from "../../shared/services/api";
 import { NavigationProps, Notice } from "../../shared/types";
 import { useInterestStore } from "../../stores/interestStore";
-import { NoticeCard } from "./components";
+import {
+  ErrorState,
+  InterestSummaryCard,
+  LoadingState,
+  NoticeSection,
+} from "./components";
 
 // 로딩 상태 타입
 type LoadingState = "idle" | "loading" | "success" | "error";
@@ -101,48 +97,6 @@ export default function MainScreen({ navigation }: NavigationProps<"Main">) {
     [navigation]
   );
 
-  // 에러 상태 UI
-  const renderErrorState = () => (
-    <View className="mx-5 bg-red-50 border border-red-200 rounded-2xl p-6">
-      <Text className="text-red-600 text-center font-medium mb-2">
-        데이터를 불러올 수 없습니다
-      </Text>
-      <Text className="text-red-500 text-center text-sm mb-4">
-        {errorMessage}
-      </Text>
-      <TouchableOpacity
-        className="bg-red-500 rounded-lg py-3 px-6"
-        onPress={loadNotices}
-      >
-        <Text className="text-white text-center font-semibold">다시 시도</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  // 로딩 상태 UI
-  const renderLoadingState = () => (
-    <View className="mx-5 bg-white rounded-2xl p-8 shadow-sm">
-      <View className="items-center">
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text className="text-gray-600 mt-4 text-center">
-          맞춤형 공지사항을 불러오는 중...
-        </Text>
-      </View>
-    </View>
-  );
-
-  // 빈 상태 UI
-  const renderEmptyState = () => (
-    <View className="mx-5 bg-gray-50 border border-gray-200 rounded-2xl p-8">
-      <Text className="text-gray-500 text-center font-medium mb-2">
-        추천 공지사항이 없습니다
-      </Text>
-      <Text className="text-gray-400 text-center text-sm">
-        설정에서 관심분야를 선택하면 맞춤형 공지사항을 받을 수 있습니다
-      </Text>
-    </View>
-  );
-
   return (
     <SafeAreaView
       className="flex-1 bg-gray-50"
@@ -153,29 +107,34 @@ export default function MainScreen({ navigation }: NavigationProps<"Main">) {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={{ paddingTop: 10 }}
       >
-        <ScreenHeader title="홈" subtitle="맞춤형 공지사항을 확인하세요" />
+        <View className="mx-5">
+          {/* 기본 정보 (항상 표시) */}
 
-        <View className="px-5">
           {/* 로딩 상태 */}
-          {loadingState === "loading" && renderLoadingState()}
+          {loadingState === "loading" && <LoadingState />}
 
           {/* 에러 상태 */}
-          {loadingState === "error" && renderErrorState()}
+          {loadingState === "error" && (
+            <>
+              <InterestSummaryCard
+                selectedInterests={getSelectedInterestNames()}
+              />
+              <ErrorState errorMessage={errorMessage} onRetry={loadNotices} />
+            </>
+          )}
 
           {/* 성공 상태 - 공지사항 목록 */}
           {loadingState === "success" && (
             <>
-              {notices.length > 0
-                ? notices.map((notice) => (
-                    <NoticeCard
-                      key={notice.id}
-                      notice={notice}
-                      onPress={handleNoticePress}
-                    />
-                  ))
-                : renderEmptyState()}
+              <InterestSummaryCard
+                selectedInterests={getSelectedInterestNames()}
+              />
+              <NoticeSection
+                notices={notices}
+                selectedInterestsCount={getSelectedInterestNames().length}
+                onNoticePress={handleNoticePress}
+              />
             </>
           )}
         </View>
