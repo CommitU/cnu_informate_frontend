@@ -1,4 +1,4 @@
-# CNU InfoMate - 개발 가이드
+# CNU Informate - 개발 가이드
 
 ## 📋 목차
 
@@ -117,7 +117,7 @@ interface Notice {
 }
 
 // 타입 정의
-type NoticeCategory = 'academic' | 'scholarship' | 'event' | 'general';
+type NoticeCategory = "academic" | "scholarship" | "event" | "general";
 
 // 함수 타입 정의
 type ApiResponse<T> = {
@@ -293,7 +293,7 @@ export const Input: React.FC<InputProps> = ({
 
 ```typescript
 // store/slices/noticeSlice.ts
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 interface NoticeState {
   notices: Notice[];
@@ -309,24 +309,24 @@ const initialState: NoticeState = {
 
 // Async thunk
 export const fetchNotices = createAsyncThunk(
-  'notice/fetchNotices',
+  "notice/fetchNotices",
   async () => {
     const response = await api.getNotices();
     return response.data;
-  },
+  }
 );
 
 const noticeSlice = createSlice({
-  name: 'notice',
+  name: "notice",
   initialState,
   reducers: {
-    clearNotices: state => {
+    clearNotices: (state) => {
       state.notices = [];
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchNotices.pending, state => {
+      .addCase(fetchNotices.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -336,7 +336,7 @@ const noticeSlice = createSlice({
       })
       .addCase(fetchNotices.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch notices';
+        state.error = action.error.message || "Failed to fetch notices";
       });
   },
 });
@@ -382,43 +382,43 @@ export const NoticeList: React.FC = () => {
 
 ```typescript
 // services/api.ts
-import axios from 'axios';
+import axios from "axios";
 
 const API_BASE_URL =
-  process.env.REACT_NATIVE_API_URL || 'http://localhost:3000';
+  process.env.REACT_NATIVE_API_URL || "http://localhost:3000";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // 요청 인터셉터
 api.interceptors.request.use(
-  config => {
+  (config) => {
     const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 // 응답 인터셉터
 api.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     if (error.response?.status === 401) {
       // 토큰 만료 처리
       logout();
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;
@@ -428,19 +428,19 @@ export default api;
 
 ```typescript
 // services/noticeService.ts
-import api from './api';
-import { Notice, ApiResponse } from '../types';
+import api from "./api";
+import { Notice, ApiResponse } from "../types";
 
 export const noticeService = {
   // 추천 공지 조회
   getRecommendedNotices: async (): Promise<ApiResponse<Notice[]>> => {
-    const response = await api.get('/notices/recommended');
+    const response = await api.get("/notices/recommended");
     return response.data;
   },
 
   // 카테고리별 공지 조회
   getNoticesByCategory: async (
-    category: string,
+    category: string
   ): Promise<ApiResponse<Notice[]>> => {
     const response = await api.get(`/notices/${category}`);
     return response.data;
@@ -458,7 +458,7 @@ export const noticeService = {
 
 ```typescript
 // hooks/useApi.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface UseApiOptions<T> {
   onSuccess?: (data: T) => void;
@@ -468,7 +468,7 @@ interface UseApiOptions<T> {
 
 export const useApi = <T>(
   apiCall: () => Promise<T>,
-  options: UseApiOptions<T> = {},
+  options: UseApiOptions<T> = {}
 ) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -484,7 +484,7 @@ export const useApi = <T>(
       setData(result);
       onSuccess?.(result);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      const errorMessage = err instanceof Error ? err.message : "Unknown error";
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -509,17 +509,17 @@ export const useApi = <T>(
 ```javascript
 // jest.config.js
 module.exports = {
-  preset: 'react-native',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  preset: "react-native",
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation)/)',
+    "node_modules/(?!(react-native|@react-native|@react-navigation)/)",
   ],
-  testMatch: ['**/__tests__/**/*.test.(ts|tsx|js)'],
+  testMatch: ["**/__tests__/**/*.test.(ts|tsx|js)"],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/index.ts',
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/index.ts",
   ],
 };
 ```
@@ -567,22 +567,22 @@ describe('NoticeCard', () => {
 
 ```typescript
 // __tests__/services/noticeService.test.ts
-import { noticeService } from '../../src/services/noticeService';
-import api from '../../src/services/api';
+import { noticeService } from "../../src/services/noticeService";
+import api from "../../src/services/api";
 
-jest.mock('../../src/services/api');
+jest.mock("../../src/services/api");
 
-describe('noticeService', () => {
+describe("noticeService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('fetches recommended notices successfully', async () => {
+  it("fetches recommended notices successfully", async () => {
     const mockResponse = {
       data: {
         success: true,
-        data: [{ id: '1', title: 'Test' }],
-        message: 'Success',
+        data: [{ id: "1", title: "Test" }],
+        message: "Success",
       },
     };
 
@@ -590,7 +590,7 @@ describe('noticeService', () => {
 
     const result = await noticeService.getRecommendedNotices();
 
-    expect(api.get).toHaveBeenCalledWith('/notices/recommended');
+    expect(api.get).toHaveBeenCalledWith("/notices/recommended");
     expect(result).toEqual(mockResponse.data);
   });
 });
@@ -630,26 +630,26 @@ cd android
 // config/environment.ts
 interface Environment {
   apiUrl: string;
-  environment: 'development' | 'staging' | 'production';
+  environment: "development" | "staging" | "production";
 }
 
 const environments: Record<string, Environment> = {
   development: {
-    apiUrl: 'http://localhost:3000',
-    environment: 'development',
+    apiUrl: "http://localhost:3000",
+    environment: "development",
   },
   staging: {
-    apiUrl: 'https://staging-api.cnu-informate.com',
-    environment: 'staging',
+    apiUrl: "https://staging-api.cnu-informate.com",
+    environment: "staging",
   },
   production: {
-    apiUrl: 'https://api.cnu-informate.com',
-    environment: 'production',
+    apiUrl: "https://api.cnu-informate.com",
+    environment: "production",
   },
 };
 
 export const getEnvironment = (): Environment => {
-  const env = process.env.REACT_NATIVE_ENV || 'development';
+  const env = process.env.REACT_NATIVE_ENV || "development";
   return environments[env];
 };
 ```

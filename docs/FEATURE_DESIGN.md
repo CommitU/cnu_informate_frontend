@@ -1,8 +1,8 @@
-# CNU InfoMate - 기능 설계 문서
+# CNU Informate - 기능 설계 문서
 
 ## 📋 프로젝트 개요
 
-**프로젝트명**: CNU InfoMate  
+**프로젝트명**: CNU Informate  
 **버전**: 1.0.0  
 **개발 기간**: 2024년  
 **플랫폼**: React Native (iOS/Android)

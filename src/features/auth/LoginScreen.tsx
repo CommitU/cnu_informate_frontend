@@ -58,7 +58,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                 <Ionicons name="school" size={40} color="white" />
               </View>
               <Text className="text-3xl font-bold text-gray-900 mb-2">
-                CNU InfoMate
+                CNU InforMate
               </Text>
               <Text className="text-lg text-gray-600 text-center">
                 충남대학교 정보를 한눈에
