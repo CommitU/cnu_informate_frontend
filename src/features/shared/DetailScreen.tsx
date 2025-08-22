@@ -160,7 +160,7 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
         )}
         {item.url && (
           <View className="absolute bottom-4 left-4 right-4">
-            <View className="bg-white rounded-3xl border border-gray-300 px-4 py-3 shadow-sm">
+            <View className="flex-row justify-end">
               <TouchableOpacity
                 className="flex-row items-center"
                 activeOpacity={0.7}
