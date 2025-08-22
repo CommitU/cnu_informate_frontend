@@ -103,7 +103,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
                 회원가입
               </Text>
               <Text className="text-base text-gray-600 text-center">
-                CNU InfoMate에 가입하고 시작하세요
+                CNU InforMate에 가입하고 시작하세요
               </Text>
             </View>
 
