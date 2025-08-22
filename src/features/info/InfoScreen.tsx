@@ -32,7 +32,7 @@ interface CategoryInfo {
   id?: number;
 }
 
-export default function InfoScreen({ navigation }: NavigationProps) {
+export default function InfoScreen({ navigation }: NavigationProps<"Info">) {
   const [selectedCategory, setSelectedCategory] = useState<Category | "전체">(
     "전체"
   );
@@ -43,7 +43,6 @@ export default function InfoScreen({ navigation }: NavigationProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingState, setLoadingState] = useState<LoadingState>("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [searchLoading, setSearchLoading] = useState(false);
   const [categoryLoading, setCategoryLoading] = useState(false);
 
   // 데이터 로드
@@ -102,6 +101,9 @@ export default function InfoScreen({ navigation }: NavigationProps) {
     async (category: Category | "전체") => {
       setSelectedCategory(category);
 
+      // 카테고리 변경 시 검색어 초기화
+      setSearchQuery("");
+
       try {
         setCategoryLoading(true);
 
@@ -133,10 +135,11 @@ export default function InfoScreen({ navigation }: NavigationProps) {
 
   // 검색 기능
   const handleSearch = useCallback(
-    async (query: string) => {
+    (query: string) => {
       setSearchQuery(query);
 
       if (query.trim() === "") {
+        // 검색어가 없으면 현재 선택된 카테고리의 공지사항 표시
         if (selectedCategory === "전체") {
           setFilteredNotices(notices);
         } else {
@@ -144,39 +147,25 @@ export default function InfoScreen({ navigation }: NavigationProps) {
           handleCategoryChange(selectedCategory);
         }
       } else {
-        try {
-          setSearchLoading(true);
-          // API를 통한 제목 검색
-          const searchResults =
-            await noticeApiService.searchNoticesByTitle(query);
+        // 검색어가 있으면 로컬에서 필터링
+        let baseNotices = notices;
 
-          // 선택된 카테고리가 "전체"가 아닌 경우 검색 결과를 카테고리별로 필터링
-          if (selectedCategory !== "전체") {
-            const categoryId = getCategoryIdByName(selectedCategory);
-            const categoryNotices =
-              await noticeApiService.getNoticesByCategory(categoryId);
-            // 검색 결과와 카테고리 결과의 교집합 찾기
-            const searchResultIds = new Set(searchResults.map((n) => n.id));
-            const filteredResults = categoryNotices.filter((n) =>
-              searchResultIds.has(n.id)
-            );
-            setFilteredNotices(filteredResults);
-          } else {
-            setFilteredNotices(searchResults);
-          }
-        } catch (error: any) {
-          console.error("검색 실패:", error);
-          // API 검색 실패 시 로컬 필터링으로 fallback
-          const filtered = notices.filter(
-            (item) =>
-              item.title.toLowerCase().includes(query.toLowerCase()) ||
-              (item.content &&
-                item.content.toLowerCase().includes(query.toLowerCase()))
-          );
-          setFilteredNotices(filtered);
-        } finally {
-          setSearchLoading(false);
+        // 선택된 카테고리가 "전체"가 아닌 경우, 해당 카테고리의 공지사항만 대상으로 검색
+        if (selectedCategory !== "전체") {
+          // 현재 로드된 공지사항에서 선택된 카테고리만 필터링
+          // (실제로는 카테고리별로 로드된 데이터가 있지만, 여기서는 전체 데이터에서 필터링)
+          baseNotices = notices;
         }
+
+        // 제목과 내용에서 검색어 검색
+        const filtered = baseNotices.filter(
+          (item) =>
+            item.title.toLowerCase().includes(query.toLowerCase()) ||
+            (item.content &&
+              item.content.toLowerCase().includes(query.toLowerCase()))
+        );
+
+        setFilteredNotices(filtered);
       }
     },
     [notices, selectedCategory, handleCategoryChange]
@@ -250,7 +239,9 @@ export default function InfoScreen({ navigation }: NavigationProps) {
     <View className="mx-5 bg-gray-50 border border-gray-200 rounded-2xl p-8">
       <Text className="text-gray-500 text-center font-medium mb-2">
         {searchQuery
-          ? "검색 결과가 없습니다"
+          ? selectedCategory === "전체"
+            ? `"${searchQuery}" 검색 결과가 없습니다`
+            : `"${searchQuery}" 검색 결과가 ${selectedCategory} 카테고리에 없습니다`
           : selectedCategory === "전체"
             ? "공지사항이 없습니다"
             : `${selectedCategory} 카테고리에 공지사항이 없습니다`}
@@ -273,14 +264,12 @@ export default function InfoScreen({ navigation }: NavigationProps) {
             <Ionicons name="search" size={20} color="#6B7280" />
             <TextInput
               className="flex-1 ml-3 text-base text-gray-900"
-              placeholder="제목, 내용으로 검색"
+              placeholder="제목 또는 내용으로 검색"
               placeholderTextColor="#9CA3AF"
               value={searchQuery}
               onChangeText={handleSearch}
             />
-            {searchLoading ? (
-              <ActivityIndicator size="small" color="#6B7280" />
-            ) : searchQuery.length > 0 ? (
+            {searchQuery.length > 0 ? (
               <TouchableOpacity onPress={() => handleSearch("")}>
                 <Ionicons name="close-circle" size={20} color="#6B7280" />
               </TouchableOpacity>
@@ -313,14 +302,12 @@ export default function InfoScreen({ navigation }: NavigationProps) {
           {/* 성공 상태 - 공지사항 목록 */}
           {loadingState === "success" && (
             <>
-              {searchLoading || categoryLoading ? (
+              {categoryLoading ? (
                 <View className="mx-5 bg-white rounded-2xl p-8 shadow-sm">
                   <View className="items-center">
                     <ActivityIndicator size="large" color="#007AFF" />
                     <Text className="text-gray-600 mt-4 text-center">
-                      {searchLoading
-                        ? "검색 중..."
-                        : "카테고리별 공지사항을 불러오는 중..."}
+                      카테고리별 공지사항을 불러오는 중...
                     </Text>
                   </View>
                 </View>

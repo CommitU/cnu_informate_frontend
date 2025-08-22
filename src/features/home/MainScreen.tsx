@@ -19,7 +19,7 @@ import { NoticeCard } from "./components";
 // 로딩 상태 타입
 type LoadingState = "idle" | "loading" | "success" | "error";
 
-export default function MainScreen({ navigation }: NavigationProps) {
+export default function MainScreen({ navigation }: NavigationProps<"Main">) {
   const { interests, getSelectedInterestNames } = useInterestStore();
   const [refreshing, setRefreshing] = useState(false);
   const [notices, setNotices] = useState<Notice[]>([]);

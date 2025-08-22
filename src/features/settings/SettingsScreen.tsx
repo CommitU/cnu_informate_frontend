@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { NavigationProps } from "../../shared/types";
 import { useAuthStore } from "../../stores/authStore";
 import { useInterestStore } from "../../stores/interestStore";
 
@@ -26,7 +27,9 @@ interface SettingItem {
   onPress?: () => void;
 }
 
-export default function SettingsScreen() {
+export default function SettingsScreen({
+  navigation,
+}: NavigationProps<"Settings">) {
   const { logout } = useAuthStore();
   const { interests, toggleInterest } = useInterestStore();
 

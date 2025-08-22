@@ -1,3 +1,5 @@
+import { NavigationProp, RouteProp } from "@react-navigation/native";
+
 // 공지사항 타입 (API 스펙 기반)
 export interface Notice {
   id: number;
@@ -92,9 +94,11 @@ export interface SettingSection {
 export type { Category } from "../constants/categories";
 
 // 네비게이션 타입
-export interface NavigationProps {
-  navigation: any;
-  route?: any;
+export interface NavigationProps<
+  T extends keyof RootStackParamList = keyof RootStackParamList,
+> {
+  navigation: NavigationProp<RootStackParamList, T>;
+  route?: RouteProp<RootStackParamList, T>;
 }
 
 // 스택 네비게이션 파라미터 타입
