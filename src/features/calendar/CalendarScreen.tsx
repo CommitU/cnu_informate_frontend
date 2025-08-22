@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useEventStore } from "../../stores/eventStore";
 
 // 일정 타입 정의
 interface Event {
@@ -62,6 +63,8 @@ const mockEvents: Event[] = [
 export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { userEvents, fetchUserEvents, getAllEventsForDate, isLoading } =
+    useEventStore();
 
   // 현재 월의 일정 가져오기
   const getEventsForMonth = (date: Date) => {
@@ -79,10 +82,28 @@ export default function CalendarScreen() {
     return mockEvents.filter((event) => event.date === dateString);
   };
 
-  // 특정 날짜의 일정 가져오기
+  // 특정 날짜의 일정 가져오기 (기본 일정 + 모든 일정)
   const getEventsForDay = (date: Date) => {
     const dateString = date.toISOString().split("T")[0];
-    return mockEvents.filter((event) => event.date === dateString);
+    const mockEventsForDay = mockEvents.filter(
+      (event) => event.date === dateString
+    );
+    const allEventsForDay = getAllEventsForDate(dateString);
+
+    return [
+      ...mockEventsForDay,
+      ...allEventsForDay.map((event) => ({
+        id: event.id,
+        title: event.title,
+        description:
+          event.source === "local"
+            ? `등록된 일정: ${event.originalItemTitle}`
+            : event.originalItemTitle,
+        date: event.date,
+        category: event.source === "local" ? "내 일정" : "API 일정",
+        color: event.source === "local" ? "#3B82F6" : "#10B981",
+      })),
+    ];
   };
 
   // 월 이동
@@ -122,9 +143,17 @@ export default function CalendarScreen() {
   // 요일 헤더
   const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
 
+  // API에서 일정 불러오기
+  useEffect(() => {
+    // TODO: 실제 사용자 ID로 교체 필요
+    fetchUserEvents(1);
+  }, [fetchUserEvents]);
+
   const calendarDays = generateCalendarDays(currentMonth);
   const monthEvents = getEventsForMonth(currentMonth);
-  const selectedDateEvents = getEventsForDate(selectedDate);
+  const selectedDateEvents = getAllEventsForDate(
+    selectedDate.toISOString().split("T")[0]
+  );
 
   return (
     <SafeAreaView
@@ -292,7 +321,10 @@ export default function CalendarScreen() {
                   }}
                   activeOpacity={0.8}
                   onPress={() => {
-                    Alert.alert(event.title, event.description);
+                    Alert.alert(
+                      event.title,
+                      event.description || event.originalItemTitle
+                    );
                   }}
                 >
                   <View className="flex-row justify-between items-start mb-2">
@@ -300,17 +332,23 @@ export default function CalendarScreen() {
                       <View className="flex-row items-center mb-2">
                         <View
                           className="w-3 h-3 rounded-full mr-2"
-                          style={{ backgroundColor: event.color }}
+                          style={{ backgroundColor: event.color || "#3B82F6" }}
                         />
                         <Text className="text-sm text-gray-600 font-semibold">
-                          {event.category}
+                          {event.source === "local" ? "내 일정" : "내 일정"}
                         </Text>
                       </View>
                       <Text className="text-lg font-bold text-gray-900 mb-1">
                         {event.title}
                       </Text>
+                      {event.source === "api" &&
+                        event.originalItemTitle !== event.title && (
+                          <Text className="text-sm text-gray-500 mb-2 italic">
+                            📋 {event.originalItemTitle}
+                          </Text>
+                        )}
                       <Text className="text-sm text-gray-600 leading-5">
-                        {event.description}
+                        {event.description || event.originalItemTitle}
                       </Text>
                     </View>
                     {event.time && (
@@ -334,29 +372,11 @@ export default function CalendarScreen() {
                   일정이 없습니다
                 </Text>
                 <Text className="text-sm text-gray-500 text-center">
-                  이 날에는 등록된 일정이 없습니다
+                  글 상세화면에서 + 버튼을 눌러 일정을 등록해보세요
                 </Text>
               </View>
             )}
           </View>
-        </View>
-
-        {/* 일정 추가 버튼 */}
-        <View className="mx-5 mb-6">
-          <TouchableOpacity
-            className="bg-blue-500 rounded-2xl py-4 items-center"
-            activeOpacity={0.8}
-            onPress={() => {
-              Alert.alert(
-                "일정 추가",
-                "일정 추가 기능은 추후 구현 예정입니다."
-              );
-            }}
-          >
-            <Text className="text-white font-semibold text-lg">
-              + 일정 추가
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

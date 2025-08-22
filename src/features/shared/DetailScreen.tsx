@@ -22,6 +22,7 @@ import {
   formatDate,
   formatDateRange,
 } from "../../shared/utils/helpers";
+import { useEventStore } from "../../stores/eventStore";
 
 interface DetailScreenProps {
   navigation: any;
@@ -37,6 +38,7 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [eventTitle, setEventTitle] = useState("");
+  const { addEvent, createEventFromNotice } = useEventStore();
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -102,20 +104,50 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
     setIsModalVisible(true);
   };
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     const finalTitle = eventTitle.trim() || item.title;
-    console.log("일정 등록:", {
-      title: finalTitle,
-      date: selectedDate.toISOString(),
-      originalItem: item.title,
-      userInput: eventTitle,
-    });
+    const eventDate = selectedDate.toISOString().split("T")[0];
 
-    Alert.alert(
-      "일정 등록 완료",
-      `제목: ${finalTitle}\n날짜: ${selectedDate.toLocaleDateString("ko-KR")}`,
-      [{ text: "확인", style: "default" }]
-    );
+    try {
+      // API로 일정 생성 (공지사항인 경우)
+      if (item.type === "notice" && typeof item.id === "number") {
+        await createEventFromNotice(1, item.id, eventDate, finalTitle); // TODO: 실제 사용자 ID로 교체
+        Alert.alert(
+          "일정 등록 완료 (API)",
+          `제목: ${finalTitle}\n날짜: ${selectedDate.toLocaleDateString("ko-KR")}`,
+          [{ text: "확인", style: "default" }]
+        );
+      } else {
+        // 로컬 스토어에 일정 추가
+        addEvent({
+          title: finalTitle,
+          date: eventDate,
+          originalItemTitle: item.title,
+        });
+        Alert.alert(
+          "일정 등록 완료 (로컬)",
+          `제목: ${finalTitle}\n날짜: ${selectedDate.toLocaleDateString("ko-KR")}`,
+          [{ text: "확인", style: "default" }]
+        );
+      }
+
+      console.log("일정 등록:", {
+        title: finalTitle,
+        date: eventDate,
+        originalItem: item.title,
+        userInput: eventTitle,
+        type: item.type,
+        method:
+          item.type === "notice" && typeof item.id === "number"
+            ? "API"
+            : "Local",
+      });
+    } catch (error) {
+      console.error("일정 등록 실패:", error);
+      Alert.alert("일정 등록 실패", "일정 등록 중 오류가 발생했습니다.", [
+        { text: "확인", style: "default" },
+      ]);
+    }
 
     setIsModalVisible(false);
     setEventTitle("");
@@ -353,11 +385,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   datePickerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   datePicker: {
     height: 200,
-    width: '100%',
+    width: "100%",
   },
 });
