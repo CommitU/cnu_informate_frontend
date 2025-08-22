@@ -1,6 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getCategoryColor } from "../../shared/constants/categories";
@@ -36,19 +43,21 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
       <View className="flex-row items-center justify-between mb-6">
         <View className="flex-row items-center space-x-3">
           {/* 카테고리 태그 */}
-          <View
-            className="px-3 py-1 rounded-full"
-            style={{
-              backgroundColor: getCategoryColor(item.category) + "20",
-            }}
-          >
-            <Text
-              className="text-sm font-semibold"
-              style={{ color: getCategoryColor(item.category) }}
+          {item.category && (
+            <View
+              className="px-3 py-1 rounded-full"
+              style={{
+                backgroundColor: getCategoryColor(item.category) + "20",
+              }}
             >
-              {item.category}
-            </Text>
-          </View>
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: getCategoryColor(item.category) }}
+              >
+                {item.category}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* 날짜 정보 */}
@@ -58,6 +67,27 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
         </Text>
       </View>
     );
+  };
+
+  const handleUrlPress = async () => {
+    if (!item.url) return;
+
+    try {
+      // URL이 유효한지 확인
+      const supported = await Linking.canOpenURL(item.url);
+
+      if (supported) {
+        await Linking.openURL(item.url);
+      } else {
+        Alert.alert("링크 열기 실패", "이 링크를 열 수 없습니다.", [
+          { text: "확인", style: "default" },
+        ]);
+      }
+    } catch (error) {
+      Alert.alert("오류 발생", "링크를 여는 중 오류가 발생했습니다.", [
+        { text: "확인", style: "default" },
+      ]);
+    }
   };
 
   return (
@@ -128,24 +158,23 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
             )}
           </View>
         )}
-      </ScrollView>
-
-      {/* 하단 고정 링크 영역 */}
-      {item.url && (
-        <View className="absolute bottom-4 left-4 right-4">
-          <View className="bg-white rounded-3xl border border-gray-300 px-4 py-3">
-            <TouchableOpacity
-              className="flex-row items-center"
-              activeOpacity={0.7}
-            >
-              <Ionicons name="link" size={14} color="#3B82F6" />
-              <Text className="text-blue-500 underline pl-2 text-sm">
-                {item.url}
-              </Text>
-            </TouchableOpacity>
+        {item.url && (
+          <View className="absolute bottom-4 left-4 right-4">
+            <View className="bg-white rounded-3xl border border-gray-300 px-4 py-3 shadow-sm">
+              <TouchableOpacity
+                className="flex-row items-center"
+                activeOpacity={0.7}
+                onPress={handleUrlPress}
+              >
+                <Ionicons name="link" size={16} color="#3B82F6" />
+                <Text className="text-blue-500 underline pl-2 pr-4 text-sm font-medium">
+                  글 링크 열기
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      )}
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
