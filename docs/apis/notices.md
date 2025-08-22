@@ -137,6 +137,101 @@ GET /api/notices/recommend?interests=수강신청,장학금,취업&limit=5
 
 ---
 
+#### 12. 📂 공지사항 카테고리 조회
+
+```http
+GET /api/notices/categories
+```
+
+**Response:**
+
+```json
+{
+  "1": {
+    "sourceId": 1,
+    "name": "특강",
+    "count": 15
+  },
+  "2": {
+    "sourceId": 2,
+    "name": "기획/마케팅",
+    "count": 8
+  },
+  "3": {
+    "sourceId": 3,
+    "name": "취업/인턴십",
+    "count": 25
+  },
+  "4": {
+    "sourceId": 4,
+    "name": "봉사 활동",
+    "count": 12
+  },
+  "5": {
+    "sourceId": 5,
+    "name": "IT/SW",
+    "count": 18
+  },
+  "6": {
+    "sourceId": 6,
+    "name": "스터디",
+    "count": 9
+  },
+  "7": {
+    "sourceId": 7,
+    "name": "디자인",
+    "count": 6
+  },
+  "8": {
+    "sourceId": 8,
+    "name": "창업",
+    "count": 11
+  },
+  "9": {
+    "sourceId": 9,
+    "name": "영상/콘텐츠",
+    "count": 14
+  },
+  "10": {
+    "sourceId": 10,
+    "name": "서포터즈/기자단",
+    "count": 7
+  },
+  "11": {
+    "sourceId": 11,
+    "name": "학사 안내",
+    "count": 22
+  },
+  "12": {
+    "sourceId": 12,
+    "name": "기타",
+    "count": 13
+  }
+}
+```
+
+#### 13. 📂 카테고리별 공지사항 조회
+
+```http
+GET /api/notices/category/{categoryId}
+```
+
+**파라미터:**
+
+- `categoryId`: 카테고리 ID
+  - 1: 특강
+  - 2: 기획/마케팅
+  - 3: 취업/인턴십
+  - 4: 봉사 활동
+  - 5: IT/SW
+  - 6: 스터디
+  - 7: 디자인
+  - 8: 창업
+  - 9: 영상/콘텐츠
+  - 10: 서포터즈/기자단
+  - 11: 학사 안내
+  - 12: 기타
+
 ## 📊 데이터 모델
 
 ### Event 엔티티
